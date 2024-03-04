@@ -35,7 +35,6 @@ class ProjectDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['process_images'] = self.object.process_images.all()  # Assuming 'process_images' is the related_name for ProcessImages
-        print(context)
         return context
 
 

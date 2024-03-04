@@ -17,18 +17,33 @@
         <div class="container">
           <div class="row align-items-stretch">
             <div class="col-md-8" data-aos="fade-up">
-              <div class="swiper-container">
-                <div class="swiper-wrapper">
-                  {% for image in project.process_images.all %}
-                  <div class="swiper-slide">
-                    <img src="{{ image.image.url }}" alt="Image" class="img-fluid">
+              <!--slide image start-->
+                <div id="Details" class="carousel slide carousel-fade" data-ride="carousel">
+                  <div class="carousel-inner">
+<!--                    <div class="carousel-item active">-->
+<!--                      <img src="{{project.cover_image_big.url}}" class="d-block w-100" alt="...">-->
+<!--                    </div>-->
+
+                    {% for image in project.process_images.all %}
+                      <div class="carousel-item active">
+                        <img src="{{image.image.url}}" class="d-block w-100" alt="...">
+                      </div>
+                    {% endfor %}
+
                   </div>
-                  {% endfor %}
+                  <a class="carousel-control-prev" href="#Details" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#Details" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
                 </div>
-                <!-- Add Arrows -->
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-              </div>
+                <!--slide image end-->
+
+
+
 <!--              <img src="{{project.cover_image_big.url}}" alt="Image" class="img-fluid">-->
             </div>
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
