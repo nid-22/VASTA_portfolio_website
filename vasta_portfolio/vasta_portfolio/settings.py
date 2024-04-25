@@ -76,18 +76,27 @@ WSGI_APPLICATION = 'vasta_portfolio.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'vasta',
+#         'USER': 'postgres',
+#         'PASSWORD': 'nidhi123',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'vasta',
         'USER': 'postgres',
-        'PASSWORD': 'nidhi123',
-        'HOST': 'localhost',
+        'PASSWORD': 'Vast2403!',
+        'HOST': 'database-2.c7yieu0wmbzk.ap-south-1.rds.amazonaws.com',
         'PORT': '5432',
     }
 }
-#vast
-# Vast2403!
+
 
 
 # Password validation
@@ -127,10 +136,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-# STATIC_ROOT = BASE_DIR / 'static' #for deployment
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",
+# ]
+STATIC_ROOT = BASE_DIR / 'static' #for deployment
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
