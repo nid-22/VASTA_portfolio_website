@@ -8,7 +8,7 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('projects/all/', ProjectListView.as_view(), name='project-list'),
+    path('', ProjectListView.as_view(), name='project-list'),
     path('projects/<slug:slug>/', ProjectDetailView.as_view(), name='project_detail'),
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),

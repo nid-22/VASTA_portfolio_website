@@ -20,15 +20,15 @@
               <!--slide image start-->
                 <div id="Details" class="carousel slide carousel-fade" data-ride="carousel">
                   <div class="carousel-inner">
-<!--                    <div class="carousel-item active">-->
-<!--                      <img src="{{project.cover_image_big.url}}" class="d-block w-100" alt="...">-->
-<!--                    </div>-->
+                    <div class="carousel-item active">
+                      <img src="{{project.cover_image_big.url}}" class="d-block w-100" alt="...">
+                    </div>
 
-                    {% for image in project.process_images.all %}
-                      <div class="carousel-item active">
-                        <img src="{{image.image.url}}" class="d-block w-100" alt="...">
-                      </div>
-                    {% endfor %}
+<!--                    {% for image in project.process_images.all %}-->
+<!--                      <div class="carousel-item active">-->
+<!--                        <img src="{{image.image.url}}" class="d-block w-100" alt="...">-->
+<!--                      </div>-->
+<!--                    {% endfor %}-->
 
                   </div>
                   <a class="carousel-control-prev" href="#Details" role="button" data-slide="prev">

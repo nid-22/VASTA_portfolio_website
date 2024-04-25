@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-pbnc#3!0ir6bv0)65j17ejin8(vznac_e7+b@ks$ut&*^-)xg(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -86,6 +86,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+#vast
+# Vast2403!
 
 
 # Password validation
