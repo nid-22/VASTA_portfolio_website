@@ -53,7 +53,7 @@
           </div>
         </div>
         <div class="col-md-4 d-none d-md-block">
-          <h3>Hire Me</h3>
+          <h3>Contact</h3>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiisexplicabo inventore. <br> <a href="#">myemail@gmail.com</a></p>
         </div>
       </div>
@@ -63,7 +63,11 @@
 
   <nav class="navbar navbar-light custom-navbar">
     <div class="container">
-      <a class="navbar-brand" href="{% url 'project-list' %}">VASTarchitects</a>
+      <a class="navbar-brand" href="{% url 'project-list' %}">
+        <img src="{% static 'assets/img/vastarchitects.png' %}" alt="Image" class="img-fluid"
+        style="max-width: 250px; height: auto;">
+      </a>
+
       <a href="#" class="burger" data-bs-toggle="collapse" data-bs-target="#main-navbar">
         <span></span>
       </a>
@@ -145,44 +149,44 @@
     </section><!-- End Services Section -->
 
     <!-- ======= Testimonials Section ======= -->
-    <section class="section pt-0">
-      <div class="container">
+<!--    <section class="section pt-0">-->
+<!--      <div class="container">-->
 
-        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">
-          <div class="swiper-wrapper">
+<!--        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">-->
+<!--          <div class="swiper-wrapper">-->
 
-            <div class="swiper-slide">
-              <div class="testimonial-wrap">
-                <div class="testimonial">
-                  <img src="{% static 'assets/img/person_1.jpg' %}" alt="Image" class="img-fluid">
-                  <blockquote>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis
-                      explicabo inventore.</p>
-                  </blockquote>
-                  <p>&mdash; Jean Hicks</p>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
+<!--            <div class="swiper-slide">-->
+<!--              <div class="testimonial-wrap">-->
+<!--                <div class="testimonial">-->
+<!--                  <img src="{% static 'assets/img/person_1.jpg' %}" alt="Image" class="img-fluid">-->
+<!--                  <blockquote>-->
+<!--                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis-->
+<!--                      explicabo inventore.</p>-->
+<!--                  </blockquote>-->
+<!--                  <p>&mdash; Jean Hicks</p>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>&lt;!&ndash; End testimonial item &ndash;&gt;-->
 
-            <div class="swiper-slide">
-              <div class="testimonial-wrap">
-                <div class="testimonial">
-                  <img src="{% static 'assets/img/person_2.jpg' %}" alt="Image" class="img-fluid">
-                  <blockquote>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis
-                      explicabo inventore.</p>
-                  </blockquote>
-                  <p>&mdash; Chris Stanworth</p>
-                </div>
-              </div>
-            </div><!-- End testimonial item -->
+<!--            <div class="swiper-slide">-->
+<!--              <div class="testimonial-wrap">-->
+<!--                <div class="testimonial">-->
+<!--                  <img src="{% static 'assets/img/person_2.jpg' %}" alt="Image" class="img-fluid">-->
+<!--                  <blockquote>-->
+<!--                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis-->
+<!--                      explicabo inventore.</p>-->
+<!--                  </blockquote>-->
+<!--                  <p>&mdash; Chris Stanworth</p>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>&lt;!&ndash; End testimonial item &ndash;&gt;-->
 
-          </div>
-          <div class="swiper-pagination"></div>
-        </div>
+<!--          </div>-->
+<!--          <div class="swiper-pagination"></div>-->
+<!--        </div>-->
 
-      </div>
-    </section><!-- End Testimonials Section -->
+<!--      </div>-->
+<!--    </section>&lt;!&ndash; End Testimonials Section &ndash;&gt;-->
 
   </main><!-- End #main -->
 
@@ -191,23 +195,16 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-6">
-          <p class="mb-1">&copy; Copyright MyPortfolio. All Rights Reserved</p>
           <div class="credits">
-            <!--
-            All the links in the footer should remain intact.
-            You can delete the links only if you purchased the pro version.
-            Licensing information: https://bootstrapmade.com/license/
-            Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=MyPortfolio
-          -->
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+
+
           </div>
         </div>
         <div class="col-sm-6 social text-md-end">
-          <a href="#"><span class="bi bi-twitter"></span></a>
-          <a href="#"><span class="bi bi-facebook"></span></a>
-          <a href="#"><span class="bi bi-instagram"></span></a>
-          <a href="#"><span class="bi bi-linkedin"></span></a>
-        </div>
+          <a href="https://www.instagram.com/vast.architects/" target="_blank"><span class="bi bi-instagram"></span></a>
+          <a href="https://www.linkedin.com/company/v%C4%81st-architects/" target="_blank"><span class="bi bi-linkedin"></span></a>
+      </div>
+
       </div>
     </div>
   </footer>
