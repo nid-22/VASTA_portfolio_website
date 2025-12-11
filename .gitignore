@@ -1,0 +1,27 @@
+## Ignore all XML files (requested)
+*.xml
+
+# Common optional ignores (uncomment if you want them)
+# Python cache
+*.pyc
+__pycache__/
+
+# Virtual environments
+.venv/
+venv/
+
+# Django media/uploads
+media/
+
+# Editor directories
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Testing and coverage reports
+.tox/
+htmlcov/
+.pytest_cache/
