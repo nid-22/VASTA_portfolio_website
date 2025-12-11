@@ -60,6 +60,8 @@ class Project(BaseModel):
     client = models.CharField(max_length=100, null=True, blank=True)
     cover_image = models.ImageField(upload_to='media/cover_images/', null=True, blank=True)
     cover_image_big = models.ImageField(upload_to='media/cover_images/', null=True, blank=True)
+    # ordering integer for display in the portfolio grid (smaller numbers show first)
+    order_to_display_id = models.PositiveIntegerField(default=0, help_text='Lower values appear earlier in the list')
 
     def __str__(self):
         return self.heading

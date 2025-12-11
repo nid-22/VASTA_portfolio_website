@@ -10,6 +10,10 @@ class ProjectListView(ListView):
     model = Project
     template_name = 'projects/index.html'
 
+    def get_queryset(self):
+        # Order projects by the order_to_display_id field so the template shows them in that order
+        return Project.objects.all().order_by('order_to_display_id')
+
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
@@ -20,7 +24,8 @@ class ProjectListView(ListView):
                 'project_name': project.heading,
                 'cover_image': project.cover_image.url if project.cover_image else None,
                 'type': project.typology.name,
-                'get_absolute_url': project.get_absolute_url
+                'get_absolute_url': project.get_absolute_url,
+                'grid_shape': project.grid_shape,
             }
             for project in context['object_list']
         ]
