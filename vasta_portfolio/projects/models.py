@@ -36,6 +36,14 @@ status_choice = (
     ('Complete','Complete'),
 )
 
+# choices for grid shape used by front-end Isotope/Masonry layout
+GRID_SHAPE_CHOICES = (
+    ('rect_tall', 'Rect Tall'),
+    ('rect_wide', 'Rect Wide'),
+    ('square_small', 'Square Small'),
+    ('square_large', 'Square Large'),
+)
+
 class Project(BaseModel):
     heading = models.CharField(max_length=100, null=False, blank=False, unique=True)
     slug = models.SlugField(unique=True, blank=True)
@@ -46,6 +54,8 @@ class Project(BaseModel):
     typology = models.ForeignKey(Typology,on_delete=models.PROTECT)
     sub_type = models.ForeignKey(SubType, on_delete=models.PROTECT, null=True)
     size = models.CharField(max_length=20,  null=False, blank=False)
+    # grid_shape controls how this project will be sized in the grid
+    grid_shape = models.CharField(max_length=20, choices=GRID_SHAPE_CHOICES, default='square_small', help_text='Grid tile shape for portfolio layout')
     location = models.ForeignKey(Location,on_delete=models.PROTECT, null=True, blank=True)
     client = models.CharField(max_length=100, null=True, blank=True)
     cover_image = models.ImageField(upload_to='media/cover_images/', null=True, blank=True)

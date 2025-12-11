@@ -14,9 +14,9 @@ class LocationAdmin(admin.ModelAdmin):
 
 # Optional: Customize admin interface for Project
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('heading', 'typology', 'location', 'project_year', 'is_active', 'updated')
-    search_fields = ('heading', 'description', 'client')
-    list_filter = ('typology', 'location', 'project_year', 'is_active')
+    list_display = ('heading', 'typology', 'location', 'project_year', 'grid_shape', 'is_active', 'updated')
+    search_fields = ('heading', 'short_description', 'long_description', 'client')
+    list_filter = ('typology', 'location', 'project_year', 'grid_shape', 'is_active')
 
 # Optional: Customize admin interface for ProcessImages
 class ProcessImagesAdmin(admin.ModelAdmin):
