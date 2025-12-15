@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from .configs.TINYMCE_CONFIG import TINYMCE_CONFIG
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,8 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'projects'
-]
+    'projects',
+    'dotenv',
+    'tinymce',]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -143,3 +145,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Extend the base TinyMCE config with content CSS (applies inside the editor iframe)
+TINYMCE_DEFAULT_CONFIG = {
+    **TINYMCE_CONFIG,
+    # CSS file(s) loaded inside the editor iframe - use absolute/static path
+    'content_css': '/static/assets/css/editor_content.css',
+    # small inline CSS string (optional)
+    'content_style': 'body { font-family: Raleway, sans-serif; line-height:1.7; }',
+}
+
+# Extra media loaded on the page that hosts the widget (not inside the iframe)
+# Paths are relative to STATIC_URL (django-tinymce will prefix STATIC_URL).
+TINYMCE_EXTRA_MEDIA = {
+    'css': {
+        'all': [
+            'assets/css/editor_widget.css',
+        ],
+    },
+    'js': [
+        'assets/js/editor_widget.js',
+    ],
+}
+
+# Optionally expose the JSON snippet for external tooling or previews
+TINYMCE_CONFIG_JSON = '/static/assets/configs/tinymce_config.json'

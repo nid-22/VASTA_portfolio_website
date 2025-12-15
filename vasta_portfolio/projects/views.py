@@ -4,6 +4,11 @@ from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
 from django.shortcuts import render
 from .models import Project
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+import uuid
 # Create your views here.
 
 class ProjectListView(ListView):
@@ -39,7 +44,10 @@ class ProjectDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['process_images'] = self.object.process_images.all()  # Assuming 'process_images' is the related_name for ProcessImages
+        # project_images is the related_name on the ProjectImage model.
+        imgs = self.object.project_images.all()
+        # Provide both keys for backward compatibility in templates/code.
+        context['project_images'] = imgs
         return context
 
 
@@ -49,5 +57,28 @@ class AboutView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = "contact.html"
+
+
+@csrf_exempt
+def tinymce_upload(request):
+    """Simple TinyMCE image uploader that returns JSON with the file location.
+
+    This is intentionally minimal: it saves the uploaded file to Django's
+    default storage and returns the public URL in the `location` key which
+    TinyMCE expects.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid request"}, status=400)
+
+    file = request.FILES.get("file")
+    if not file:
+        return JsonResponse({"error": "No file uploaded"}, status=400)
+
+    filename = f"tinymce/{uuid.uuid4()}_{file.name}"
+    path = default_storage.save(filename, ContentFile(file.read()))
+
+    return JsonResponse({
+        "location": default_storage.url(path)
+    })
 
 

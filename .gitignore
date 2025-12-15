@@ -27,3 +27,5 @@ Thumbs.db
 .tox/
 htmlcov/
 .pytest_cache/
+
+project_images/

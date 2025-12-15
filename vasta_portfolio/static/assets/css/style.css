@@ -37,6 +37,11 @@ h6,
   padding: 4rem 0;
 }
 
+/* Custom larger top spacing for process rows (used in work-single) */
+.row.mt-6 {
+  margin-top: 4.5rem; /* ~72px, increases space above the 'The Process' container */
+}
+
 .filters a {
   text-decoration: none;
   color: #000;
@@ -229,20 +234,42 @@ h6,
   /* required */
 }
 
+.list-line {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .list-line li {
   margin-bottom: 10px;
   position: relative;
-  padding-left: 30px;
 }
 
-.list-line li:before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.7rem;
-  width: 10px;
-  height: 2px;
-  background: #000;
+/* Make list items act like links. Prefer using an <a> inside each <li>; these rules
+   style the anchor (and provide a fallback hover styling for bare <li>s).
+   Hover color is orange for emphasis. */
+.list-line li a,
+.list-line li a:visited {
+  color: #0d1e2d; /* base text color (matches body) */
+  text-decoration: none;
+  transition: color 0.15s ease;
+  display: inline-block;
+}
+
+.list-line li a:hover,
+.list-line li a:focus {
+  color: #ff7a00; /* orange on hover */
+  text-decoration: none;
+  outline: none;
+}
+
+/* Fallback if <li> contains plain text (no <a>) — show pointer and color change on hover */
+.list-line li {
+  cursor: default;
+}
+.list-line li:hover {
+  color: #ff7a00;
+  cursor: pointer;
 }
 
 .form-control {
@@ -479,6 +506,87 @@ h6,
   color: #000;
 }
 
+
+/* Center images that appear inside project content (rendered HTML from TinyMCE) */
+.project-content img,
+.project-content picture,
+.project-content figure img,
+.project-content video {
+  /* Make media responsive and prevent overflow */
+  display: block;
+  max-width: 100%; /* never larger than container */
+  height: auto;
+  margin: 1rem auto; /* space above/below and center horizontally */
+  padding: 0.25rem; /* small inner padding so image doesn't touch edges */
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* Figures (with captions) should be centered and captions styled */
+.project-content figure {
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.project-content figcaption {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+/* Paragraph images should be block-level and centered so text does not flow beside them.
+   If you intentionally want text to wrap around an image, use the utility classes
+   `.align-left` or `.align-right` on the <img>. */
+.project-content p img,
+.project-content span img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1rem auto; /* vertical spacing + center horizontally */
+}
+
+/* Optional utility classes for left/right aligned images inside content */
+.project-content img.align-left {
+  float: left;
+  margin-right: 1rem;
+  margin-left: 0;
+}
+
+.project-content img.align-right {
+  float: right;
+  margin-left: 1rem;
+  margin-right: 0;
+}
+
+/* Clearfix helper if floats are used inside article content */
+.project-content:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Image row: when multiple image-only blocks should appear side-by-side */
+.project-content .image-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap; /* allow wrapping on small screens */
+}
+
+.project-content .image-row img {
+  display: block;
+  width: 100%;
+  max-width: calc(50% - 0.5rem); /* two images per row by default */
+  height: auto;
+}
+
+@media (max-width: 700px) {
+  .project-content .image-row img {
+    max-width: 100%; /* stack on small screens */
+  }
+}
 .social a {
   display: inline-block;
   width: 50px;

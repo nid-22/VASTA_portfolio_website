@@ -3,6 +3,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse
 
+from tinymce.models import HTMLField
+
 # Create your models here.
 class BaseModel(models.Model):
     is_active = models.BooleanField(default=True)
@@ -54,12 +56,12 @@ class Project(BaseModel):
     typology = models.ForeignKey(Typology,on_delete=models.PROTECT)
     sub_type = models.ForeignKey(SubType, on_delete=models.PROTECT, null=True)
     size = models.CharField(max_length=20,  null=False, blank=False)
+    content = HTMLField(default="", null=True, blank=True)
     # grid_shape controls how this project will be sized in the grid
     grid_shape = models.CharField(max_length=20, choices=GRID_SHAPE_CHOICES, default='square_small', help_text='Grid tile shape for portfolio layout')
     location = models.ForeignKey(Location,on_delete=models.PROTECT, null=True, blank=True)
     client = models.CharField(max_length=100, null=True, blank=True)
     cover_image = models.ImageField(upload_to='media/cover_images/', null=True, blank=True)
-    cover_image_big = models.ImageField(upload_to='media/cover_images/', null=True, blank=True)
     # ordering integer for display in the portfolio grid (smaller numbers show first)
     order_to_display_id = models.PositiveIntegerField(default=0, help_text='Lower values appear earlier in the list')
 
@@ -74,8 +76,14 @@ class Project(BaseModel):
     def get_absolute_url(self):
         return reverse('project_detail', kwargs={'slug':self.slug})
 
-class ProcessImages(BaseModel):
-    project = models.ForeignKey(Project, related_name='process_images', on_delete=models.PROTECT)
+class ProjectImage(BaseModel):
+    """One image attached to a Project. Kept as a separate model so the
+    admin can inline multiple images on the Project edit page.
+    """
+    project = models.ForeignKey(Project, related_name='project_images', on_delete=models.PROTECT)
     image = models.ImageField(upload_to='media/process_images/')
+
+    def __str__(self):
+        return f"Image for {self.project.heading} ({self.pk})"
 
 

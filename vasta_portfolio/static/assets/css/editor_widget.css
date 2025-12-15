@@ -1,0 +1,6 @@
+/* Editor widget CSS - styles that load on the admin/form page (not inside iframe) */
+.tinymce-editor-wrapper {
+  margin-bottom: 1rem;
+}
+
+

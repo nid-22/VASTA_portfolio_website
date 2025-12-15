@@ -1,0 +1,31 @@
+/* Editor content CSS - styles that apply inside the TinyMCE iframe */
+body {
+  font-family: "Raleway", sans-serif;
+  line-height: 1.7;
+  color: #0d1e2d;
+  padding: 1rem;
+}
+
+figure { margin: 2rem 0; }
+figcaption {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}
+
+blockquote {
+  font-style: italic;
+  border-left: 3px solid #ccc;
+  padding-left: 1rem;
+  color: #555;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* center images inside the editor iframe */
+.mce-content-body img,
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

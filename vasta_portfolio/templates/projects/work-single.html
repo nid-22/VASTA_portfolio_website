@@ -6,9 +6,9 @@
 <section class="section">
       <div class="container">
         <div class="row mb-4 align-items-center">
-          <div class="col-md-6" data-aos="fade-up">
-            <h2>{{project.heading}}</h2>
-            <p>{{project.short_description}}</p>
+          <div class="col-md-8" data-aos="fade-up">
+            <h2>{{ project.heading }}</h2>
+            <p>{{ project.short_description|safe }}</p>
           </div>
         </div>
       </div>
@@ -17,30 +17,28 @@
         <div class="container">
           <div class="row align-items-stretch">
             <div class="col-md-8" data-aos="fade-up">
-              <!--slide image start-->
-                <div id="Details" class="carousel slide carousel-fade" data-ride="carousel">
-                  <div class="carousel-inner">
-                    <div class="carousel-item active">
-                      <img src="{{project.cover_image_big.url}}" class="d-block w-100" alt="...">
-                    </div>
-
-<!--                    {% for image in project.process_images.all %}-->
-<!--                      <div class="carousel-item active">-->
-<!--                        <img src="{{image.image.url}}" class="d-block w-100" alt="...">-->
-<!--                      </div>-->
-<!--                    {% endfor %}-->
-
+              <!-- slide images (Bootstrap 5 carousel) -->
+              {% if project.project_images.exists %}
+              <div id="Details" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  {% for image in project.project_images.all %}
+                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.alt|default:project.heading }}">
                   </div>
-                  <a class="carousel-control-prev" href="#Details" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                  <a class="carousel-control-next" href="#Details" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                  </a>
+                  {% endfor %}
                 </div>
-                <!--slide image end-->
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#Details" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#Details" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+              {% endif %}
+              <!-- end slide images -->
 
 
 
@@ -48,11 +46,11 @@
             </div>
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
               <div class="sticky-content">
-                <h3 class="h3">{{project.heading}}</h3>
+                <!-- <h3 class="h3">{{project.heading}}</h3> -->
                 <p class="mb-4"><span class="text-muted">{{project.sub_type.name}}</span></p>
 
-                <div class="mb-5">
-                  <p>{{project.long_description}}</p>
+                <div class="mb-5 project-content">
+                  {{ project.long_description|safe }}
 
                 </div>
 
@@ -64,22 +62,21 @@
                   <li>Location : {{project.location}}</li>
                 </ul>
 
-                <p><a href="#" class="readmore">Visit Website</a></p>
+                <!-- <p><a href="#" class="readmore">Visit Website</a></p> -->
               </div>
             </div>
           </div>
         </div>
 
         <div class="container">
-        <div class="row mt-4 align-items-center">
-          <div class="col-md-8" data-aos="fade-up">
+        <div class="row mt-6 align-items-center">
+          <div class="col-md-11" data-aos="fade-up">
             <h2>The Process</h2>
-            <p>{{project.short_description}}</p>
+            <div class="project-content">{{ project.content|safe }}</div>
           </div>
         </div>
       </div>
 </section>
-
 
   <!-- Initialize Swiper -->
 <script>
