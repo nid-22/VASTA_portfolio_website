@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block projects %}
+    <!-- ======= Blog Section ======= -->
+    <section class="section site-portfolio">
+      <div class="container">
+        <div class="row mb-5 align-items-center">
+          <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
+            <h2>blog</h2>
+          </div>
+        </div>
+        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
+          {% for article in articles %}
+            <div class="item col-sm-6 col-md-4 col-lg-4 mb-4">
+              <a href="{{ article.get_absolute_url }}" class="item-wrap fancybox">
+                <div class="work-info">
+                  <h3>{{ article.title }}</h3>
+                  <span>{{ article.created_date|date:'F j, Y' }}</span>
+                </div>
+                {% if article.cover_image %}
+                  <img class="img-fluid" src="{{ article.cover_image.url }}" alt="{{ article.title }}">
+                {% else %}
+                  <img class="img-fluid" src="{% static 'assets/img/img_1.jpg' %}" alt="{{ article.title }}">
+                {% endif %}
+              </a>
+            </div>
+          {% empty %}
+            <p>No articles yet.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </section><!-- End Blog Section -->
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <section class="section">
+    <div class="container">
+      <div class="row mb-4">
+        <div class="col-12" data-aos="fade-up">
+          <h1>{{ article.title }}</h1>
+          <p class="text-muted">{{ article.created_date|date:'F j, Y' }}{% if article.total_read_time %} • {{ article.total_read_time }} min read{% endif %}</p>
+        </div>
+      </div>
+
+      {% if article.cover_image %}
+      <div class="row mb-4">
+        <div class="col-12" data-aos="fade-up">
+          <img src="{{ article.cover_image.url }}" alt="{{ article.title }}" class="img-fluid">
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="row">
+        <div class="col-12 project-content" data-aos="fade-up">
+          {{ article.content|safe }}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
