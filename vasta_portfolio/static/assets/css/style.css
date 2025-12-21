@@ -587,6 +587,66 @@ h6,
     max-width: 100%; /* stack on small screens */
   }
 }
+/* Carousel sizing: keep a fixed visual area and fit images inside it.
+   Portrait images will have grey bars to the sides; landscape images will
+   fit without stretching. Adjust --carousel-height to taste. */
+/* Carousel sizing: fixed visual area with 'contain' fit so images don't
+   stretch the carousel. Portrait images will show grey bars on the
+   sides; landscape images will fit by height. Use the CSS variable to
+   tune the height. */
+#Details .carousel-inner {
+  --carousel-height: 100vh;
+  background-color: #e9e9e9; /* light grey background for empty space */
+  height: var(--carousel-height) !important;
+  min-height: 320px;
+  max-height: 720px;
+  overflow: hidden;
+}
+
+#Details .carousel-item {
+  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Use object-fit: contain to ensure the whole image is visible without
+   altering aspect ratio. Height is 100% so the carousel area remains
+   constant. Width adjusts automatically and empty space shows the
+   grey background. */
+#Details .carousel-item img {
+  /* Constrain images so they never exceed the carousel area in either
+     dimension. Using max-width/max-height ensures the entire image is
+     visible (no cropping) while preserving aspect ratio. */
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  /* On small screens reduce carousel height */
+  #Details .carousel-inner { --carousel-height: 45vh; }
+}
+
+/* Make carousel controls darker so they're visible on white background */
+#Details .carousel-control-prev-icon,
+#Details .carousel-control-next-icon {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.5rem 1.5rem;
+  /* custom white SVG icon */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 16 16'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 0 0 .708L6.707 8l4.647 5.646a.5.5 0 0 0-.708.708l-5-6a.5.5 0 0 0 0-.708l5-6a.5.5 0 0 0 .708 0z'/%3E%3C/svg%3E");
+}
+
+/* flip the next icon horizontally (rotate 180deg) so both use the same SVG */
+#Details .carousel-control-next-icon {
+  transform: rotate(180deg);
+}
 .social a {
   display: inline-block;
   width: 50px;

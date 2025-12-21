@@ -6,7 +6,7 @@
 <section class="section">
       <div class="container">
         <div class="row mb-4 align-items-center">
-          <div class="col-md-8" data-aos="fade-up">
+          <div class="col-md-11" data-aos="fade-up">
             <h2>{{ project.heading }}</h2>
             <p>{{ project.short_description|safe }}</p>
           </div>
@@ -23,7 +23,7 @@
                 <div class="carousel-inner">
                   {% for image in project.project_images.all %}
                   <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="{{ image.image.url }}" class="d-block w-100" alt="{{ image.alt|default:project.heading }}">
+                    <img src="{{ image.image.url }}" class="d-block" alt="{{ image.alt|default:project.heading }}">
                   </div>
                   {% endfor %}
                 </div>
