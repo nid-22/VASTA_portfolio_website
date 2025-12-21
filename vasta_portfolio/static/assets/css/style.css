@@ -587,6 +587,39 @@ h6,
     max-width: 100%; /* stack on small screens */
   }
 }
+
+/* About page hero with background image */
+.about-hero{
+  background-image: url("../img/cover_about.webp");
+  background-size: cover;
+  background-position: center;
+  border-radius: 6px;
+  min-height: 300px;
+  display: flex;
+    align-items: flex-start;
+    /* stack heading and paragraph vertically */
+    flex-direction: column;
+  /* make full-bleed: span the full viewport width while remaining inside the flow */
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box; /* ensure padding doesn't cause overflow */
+  padding: 2rem 1.5rem; /* keep interior spacing similar to container */
+}
+.about-hero h2, .about-hero p{
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.about-image img{
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
 /* Carousel sizing: keep a fixed visual area and fit images inside it.
    Portrait images will have grey bars to the sides; landscape images will
    fit without stretching. Adjust --carousel-height to taste. */

@@ -8,8 +8,7 @@
         <div class="row mb-5 align-items-end">
           <div class="col-md-6" data-aos="fade-up">
             <h2>Contact</h2>
-            <p class="mb-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut
-              officiis explicabo inventore.
+            <p class="mb-0">For project, interior, and collaboration inquiries, please contact our studio.
             </p>
           </div>
 
@@ -18,7 +17,8 @@
         <div class="row">
           <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
 
-            <form action="forms/contact.php" method="post" role="form" class="php-email-form">
+            <form action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
+              {% csrf_token %}
 
               <div class="row gy-3">
                 <div class="col-md-6 form-group">
@@ -40,8 +40,8 @@
 
                 <div class="col-md-12 my-3">
                   <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                  <div class="error-message">{% if error %}{{ error }}{% endif %}</div>
+                  <div class="sent-message">{% if sent %}Your message has been sent. Thank you!{% endif %}</div>
                 </div>
 
                 <div class="col-md-6 mt-0 form-group">
@@ -57,15 +57,15 @@
             <ul class="list-unstyled">
               <li class="mb-3">
                 <strong class="d-block mb-1">Address</strong>
-                <span>203 Fake St. Mountain View, San Francisco, California, USA</span>
+                <span>Rukmini Towers, Platform Rd, VV Giri Colony, Seshadripuram, Bengaluru, Karnataka 560020</span>
               </li>
               <li class="mb-3">
                 <strong class="d-block mb-1">Phone</strong>
-                <span>+1 232 3235 324</span>
+                <span>+91 8248677606</span>
               </li>
               <li class="mb-3">
                 <strong class="d-block mb-1">Email</strong>
-                <span>youremail@domain.com</span>
+                <span>design@vastarchitects.in</span>
               </li>
             </ul>
           </div>

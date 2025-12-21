@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
+from django.core.mail import send_mail, BadHeaderError
+from django.conf import settings
+from django.shortcuts import redirect
 from django.shortcuts import render
 from .models import Project
 from django.http import JsonResponse
@@ -57,6 +60,34 @@ class AboutView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = "contact.html"
+
+    def post(self, request, *args, **kwargs):
+        # Read form fields
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', 'Website contact').strip()
+        message = request.POST.get('message', '').strip()
+
+        # Build email body
+        body = f"From: {name} <{email}>\n\n{message}"
+
+        recipient = 'design@vastarchitects.in'
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SERVER_EMAIL', None) or email or 'webmaster@localhost'
+
+        try:
+            send_mail(subject, body, from_email, [recipient], fail_silently=False)
+            context = self.get_context_data(**kwargs)
+            context['sent'] = True
+            return render(request, self.template_name, context)
+        except BadHeaderError:
+            context = self.get_context_data(**kwargs)
+            context['error'] = 'Invalid header found.'
+            return render(request, self.template_name, context)
+        except Exception as e:
+            # Log exception? For now, show a generic error message in template
+            context = self.get_context_data(**kwargs)
+            context['error'] = 'An error occurred while sending the message. Please try again later.'
+            return render(request, self.template_name, context)
 
 
 @csrf_exempt
