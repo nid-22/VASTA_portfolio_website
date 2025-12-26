@@ -628,11 +628,11 @@ h6,
    sides; landscape images will fit by height. Use the CSS variable to
    tune the height. */
 #Details .carousel-inner {
-  --carousel-height: 100vh;
-  background-color: #e9e9e9; /* light grey background for empty space */
+
+  background-color: #ffffff; /* white background for empty space */
   height: var(--carousel-height) !important;
   min-height: 320px;
-  max-height: 720px;
+  max-height: none; /* allow full viewport usage */
   overflow: hidden;
 }
 
@@ -666,14 +666,23 @@ h6,
 }
 
 /* Make carousel controls darker so they're visible on white background */
+/* white arrow icon with a thin black stroke + circular border */
 #Details .carousel-control-prev-icon,
 #Details .carousel-control-next-icon {
-  background-color: transparent;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 1.5rem 1.5rem;
-  /* custom white SVG icon */
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23fff' viewBox='0 0 16 16'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 0 0 .708L6.707 8l4.647 5.646a.5.5 0 0 0-.708.708l-5-6a.5.5 0 0 0 0-.708l5-6a.5.5 0 0 0 .708 0z'/%3E%3C/svg%3E");
+  background-size: 1rem 1rem;
+  background-color: transparent;
+  /* SVG: white fill with black stroke for contrast */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 0 0 .708L6.707 8l4.647 5.646a.5.5 0 0 0-.708.708l-5-6a.5.5 0 0 0 0-.708l5-6a.5.5 0 0 0 .708 0z' fill='%23fff' stroke='%23000' stroke-width='0.8'/%3E%3C/svg%3E");
+
+  /* circular container look */
+  border: 1px solid rgba(0,0,0,0.85);
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-block;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 /* flip the next icon horizontally (rotate 180deg) so both use the same SVG */
