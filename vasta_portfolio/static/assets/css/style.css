@@ -714,3 +714,35 @@ h6,
 .social a:hover {
   color: #000;
 }
+
+/* Instant switch for the #Details carousel: remove all transitions so
+   slides change immediately with no fade or slide animation. Useful
+   when you want a hard cut between images. */
+#Details .carousel,
+#Details .carousel .carousel-inner,
+#Details .carousel .carousel-item,
+#Details .carousel .carousel-item img,
+#Details .carousel-fade .carousel-item,
+#Details .carousel-fade .carousel-item.active,
+#Details .carousel-item-next,
+#Details .carousel-item-prev,
+#Details .carousel-item-start,
+#Details .carousel-item-end {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Ensure no delayed opacity changes from Bootstrap cause ghosting */
+#Details .carousel-fade .active.carousel-item-start,
+#Details .carousel-fade .active.carousel-item-end,
+#Details .carousel-fade .carousel-item-next.carousel-item-start,
+#Details .carousel-fade .carousel-item-prev.carousel-item-end {
+  opacity: 0 !important;
+  transition: none !important;
+}
+
+/* Active slide should be fully visible immediately */
+#Details .carousel-fade .carousel-item.active {
+  opacity: 1 !important;
+  z-index: 2 !important;
+}
