@@ -628,11 +628,14 @@ h6,
    sides; landscape images will fit by height. Use the CSS variable to
    tune the height. */
 #Details .carousel-inner {
-
-  background-color: #ffffff; /* white background for empty space */
+  /* Fixed visual area for the carousel so images never extend the
+     page height. The image will be contained inside this box and
+     show the grey background for any empty space. */
+  --carousel-height: 550px; /* desktop default - adjust to taste */
+  background-color: #ffffff; /* light grey background for empty space */
   height: var(--carousel-height) !important;
   min-height: 320px;
-  max-height: none; /* allow full viewport usage */
+  max-height: var(--carousel-height);
   overflow: hidden;
 }
 
