@@ -532,7 +532,7 @@ h6,
   /* Fixed visual frame for the main image so very tall images don't push the page height */
   text-align: center;
   width: 100%;
-  height: 100vh; /* primary viewport-based height */
+  height: 70vh; /* primary viewport-based height */
   max-height: 800px; /* hard cap for very large screens */
   min-height: 320px; /* ensure reasonable size on small screens */
   display: flex;
