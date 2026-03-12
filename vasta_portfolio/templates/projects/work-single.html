@@ -17,28 +17,34 @@
         <div class="container">
           <div class="row align-items-stretch">
             <div class="col-md-8" data-aos="fade-up">
-              <!-- slide images (Bootstrap 5 carousel) -->
-              {% if project.project_images.exists %}
-              <div id="Details" class="carousel slide carousel-fade" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                  {% for image in project.project_images.all %}
-                  <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                    <img src="{{ image.image.url }}" class="d-block" alt="{{ image.alt|default:project.heading }}">
-                  </div>
-                  {% endfor %}
+              <!-- Gallery: one large photo and four small thumbnails below -->
+              <div class="project-gallery" data-gallery>
+                <div class="gallery-main mb-3">
+                  {% comment %} Use project.project_images only; first image is main photo if present {% endcomment %}
+                  {% if project.project_images.all|length > 0 %}
+                    <img loading="lazy" src="{{ project.project_images.all.0.image.url }}" alt="{{ project.heading }}" class="img-fluid main-photo" data-index="0">
+                  {% endif %}
                 </div>
 
-                <button class="carousel-control-prev" type="button" data-bs-target="#Details" data-bs-slide="prev">
-                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#Details" data-bs-slide="next">
-                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span class="visually-hidden">Next</span>
-                </button>
+                {% with total=project.project_images.all|length %}
+                  {# thumbnails are the next up to 4 images (images 2..5). Show +N if total images > 5 #}
+                  {% with thumbs_total=total|add:"-1" %}
+                    <div class="gallery-thumbs d-flex justify-content-center gap-2 flex-wrap" data-thumbs>
+                      {% for image in project.project_images.all|slice:"1:5" %}
+                        <div class="thumb" data-index="{{ forloop.counter0|add:1 }}">
+                          <img loading="lazy" src="{{ image.image.url }}" alt="thumb" class="img-fluid">
+                          {% if forloop.last and total|add:"0" > 5 %}
+                            {% with extra=total|add:"-5" %}
+                              <div class="thumb-count">+{{ extra }}</div>
+                            {% endwith %}
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endwith %}
+                {% endwith %}
               </div>
-              {% endif %}
-              <!-- end slide images -->
+              <!-- end gallery -->
 
 
 
@@ -77,15 +83,5 @@
         </div>
       </div>
 </section>
-
-  <!-- Initialize Swiper -->
-<script>
-  var swiper = new Swiper('.swiper-container', {
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-  });
-</script>
 
 {% endblock %}

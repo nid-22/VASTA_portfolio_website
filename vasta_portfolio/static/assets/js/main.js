@@ -108,5 +108,72 @@
       mirror: false
     })
   });
+  })();
 
-})()
+  /* Gallery lightbox: open clicked thumbnail or main photo fullscreen */
+  (function(){
+    const gallery = document.querySelector('[data-gallery]');
+    if (!gallery) return;
+
+    const mainImg = gallery.querySelector('.gallery-main .main-photo');
+    const thumbs = Array.from(gallery.querySelectorAll('.gallery-thumbs .thumb img'));
+
+    // create lightbox DOM
+    let lightbox = document.querySelector('.gallery-lightbox');
+    if (!lightbox) {
+      lightbox = document.createElement('div');
+      lightbox.className = 'gallery-lightbox';
+      lightbox.innerHTML = '\n      <button class="gb-close" aria-label="Close">✕</button>\n      <button class="gb-prev" aria-label="Previous">◀</button>\n      <img src="" alt="" class="gb-image">\n      <button class="gb-next" aria-label="Next">▶</button>\n    ';
+      document.body.appendChild(lightbox);
+    }
+
+    const lbImage = lightbox.querySelector('.gb-image');
+    const btnClose = lightbox.querySelector('.gb-close');
+    const btnPrev = lightbox.querySelector('.gb-prev');
+    const btnNext = lightbox.querySelector('.gb-next');
+
+    const imageUrls = [];
+    if (mainImg) imageUrls.push(mainImg.getAttribute('src'));
+    thumbs.forEach(t => imageUrls.push(t.getAttribute('src')));
+
+    let currentIndex = 0;
+
+    function openAt(index){
+      if (index < 0 || index >= imageUrls.length) return;
+      currentIndex = index;
+      lbImage.src = imageUrls[currentIndex];
+      lightbox.classList.add('open');
+      document.documentElement.style.overflow = 'hidden';
+    }
+
+    function close(){
+      lightbox.classList.remove('open');
+      document.documentElement.style.overflow = '';
+    }
+
+    function next(){
+      currentIndex = (currentIndex + 1) % imageUrls.length;
+      lbImage.src = imageUrls[currentIndex];
+    }
+
+    function prev(){
+      currentIndex = (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+      lbImage.src = imageUrls[currentIndex];
+    }
+
+    if (mainImg) mainImg.addEventListener('click', ()=> openAt(0));
+    thumbs.forEach((t, i) => t.addEventListener('click', ()=> openAt(i + (mainImg ? 1 : 0))));
+
+    btnClose.addEventListener('click', close);
+    btnNext.addEventListener('click', next);
+    btnPrev.addEventListener('click', prev);
+
+    lightbox.addEventListener('click', (e)=>{ if (e.target === lightbox) close(); });
+    window.addEventListener('keydown', (e)=>{
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+    });
+
+  })();
