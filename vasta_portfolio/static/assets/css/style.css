@@ -272,6 +272,18 @@ h6,
   cursor: pointer;
 }
 
+/* Details section in project single: do not highlight orange on hover and tighten spacing */
+.sticky-content .list-line li {
+  margin-bottom: 2px; /* reduced line spacing for compact details */
+  cursor: default; /* not interactive */
+  color: inherit;
+}
+.sticky-content .list-line li:hover,
+.sticky-content .list-line li a:hover {
+  color: inherit !important; /* prevent inherited orange hover */
+  cursor: default;
+}
+
 .form-control {
   border-radius: 0;
   background: #f8f9fa;
