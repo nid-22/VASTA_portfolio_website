@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block single %}
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-11" data-aos="fade-up">
+        <h2>Careers</h2>
+        <p>If you'd like to join our studio, please fill the form below.</p>
+
+        {% if sent %}
+          <div class="alert alert-success">Thanks — your application has been sent.</div>
+        {% endif %}
+        {% if error %}
+          <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <div class="row">
+          <div class="col-md-6 order-1">
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="name" class="form-label">Full name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+              </div>
+              <div class="mb-3">
+                <label for="skills" class="form-label">Skills (comma separated)</label>
+                <input type="text" class="form-control" id="skills" name="skills">
+              </div>
+              <div class="mb-3">
+                <label for="years" class="form-label">Years of experience</label>
+                <input type="number" class="form-control" id="years" name="years" min="0">
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="internship" name="internship">
+                <label class="form-check-label" for="internship">Open to internship</label>
+              </div>
+              <div class="mb-3">
+                <label for="portfolio" class="form-label">Portfolio (PDF, ZIP, DOC, DOCX)</label>
+                <input type="file" class="form-control" id="portfolio" name="portfolio" accept="application/pdf,application/zip,application/x-zip-compressed,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                <div class="form-text">Accepted formats: PDF, ZIP, DOC, DOCX. Maximum file size: 10 MB.</div>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Send application</button>
+            </form>
+          </div>
+
+          <div class="col-md-6 order-2 d-flex align-items-center justify-content-center">
+            <!-- Placeholder for project image. Replace src when you provide the image link. -->
+            <img id="careers-side-img" src="" alt="Project preview" class="img-fluid d-none">
+            <div id="careers-side-placeholder" class="w-100 h-100 d-flex align-items-center justify-content-center border rounded" style="min-height:220px;">
+              <small class="text-muted">Project image will appear here</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProjectListView, ProjectDetailView, AboutView, ContactView, tinymce_upload
+from .views import ProjectListView, ProjectDetailView, AboutView, ContactView, tinymce_upload, CareersView
 
 
 
@@ -13,4 +13,5 @@ urlpatterns = [
     path('projects/<slug:slug>/', ProjectDetailView.as_view(), name='project_detail'),
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
+    path('careers/', CareersView.as_view(), name='careers'),
 ]

@@ -12,6 +12,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import uuid
+from django.views.generic.edit import FormView
+from django.core.mail import EmailMessage
+from django.utils.encoding import smart_str
+
+# Max portfolio upload size (bytes)
+MAX_CAREER_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+ALLOWED_CAREER_MIME = {
+    'application/pdf',
+    'application/zip',
+    'application/x-zip-compressed',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+}
 # Create your views here.
 
 class ProjectListView(ListView):
@@ -111,5 +124,63 @@ def tinymce_upload(request):
     return JsonResponse({
         "location": default_storage.url(path)
     })
+
+
+class CareersView(TemplateView):
+    template_name = 'projects/careers.html'
+
+    def post(self, request, *args, **kwargs):
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        skills = request.POST.get('skills', '').strip()
+        years = request.POST.get('years', '').strip()
+        internship = request.POST.get('internship', '') == 'on'
+
+        portfolio = request.FILES.get('portfolio')
+
+        # Validate file size
+        if portfolio and getattr(portfolio, 'size', 0) > MAX_CAREER_FILE_SIZE:
+            ctx = self.get_context_data(**kwargs)
+            ctx['error'] = f"Portfolio file is too large. Maximum allowed size is {MAX_CAREER_FILE_SIZE // (1024*1024)} MB."
+            return render(request, self.template_name, ctx)
+
+        # Validate MIME type if available
+        if portfolio:
+            content_type = getattr(portfolio, 'content_type', '')
+            if content_type and content_type not in ALLOWED_CAREER_MIME:
+                ctx = self.get_context_data(**kwargs)
+                ctx['error'] = "Unsupported file format. Accepted: PDF, ZIP, DOC, DOCX."
+                return render(request, self.template_name, ctx)
+
+        recipient = 'design@vastarchitects.in'
+
+        subject = f"Career submission from {name or 'Candidate'}"
+        body_lines = [
+            f"Name: {name}",
+            f"Email: {email}",
+            f"Skills: {skills}",
+            f"Years experience: {years}",
+            f"Looking for internship: {'Yes' if internship else 'No'}",
+        ]
+        body = "\n".join(body_lines)
+
+        try:
+            email_msg = EmailMessage(subject=subject, body=body, to=[recipient])
+            # Attach portfolio file in-memory without saving to disk
+            if portfolio:
+                # portfolio.read() will return bytes; attach with original filename and content_type
+                content = portfolio.read()
+                filename = portfolio.name
+                content_type = portfolio.content_type if hasattr(portfolio, 'content_type') else 'application/octet-stream'
+                email_msg.attach(filename, content, content_type)
+
+            email_msg.send(fail_silently=False)
+            ctx = self.get_context_data(**kwargs)
+            ctx['sent'] = True
+            return render(request, self.template_name, ctx)
+        except Exception as e:
+            ctx = self.get_context_data(**kwargs)
+            ctx['error'] = 'An error occurred while sending your application. Please try again later.'
+            return render(request, self.template_name, ctx)
 
 

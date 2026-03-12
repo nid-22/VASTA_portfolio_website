@@ -100,65 +100,21 @@
 
     <div class="row justify-content-center text-center mb-5">
       <div class="col-lg-6">
-        <h3 class="h3 heading">Practice</h3>
-        <p>Architecture, Interior Design and Cultural Discourse</p>
+        <!-- replace heading with logo -->
+        <img src="{% static 'assets/img/vastarchitects.png' %}" alt="VAST Architects" style="max-width:220px; height:auto;">
+        <!-- single-line descriptor below the logo -->
+        <p class="small text-muted mt-2 mb-0">Architecture &nbsp; | &nbsp; Interior &nbsp; | &nbsp; Landscape</p>
       </div>
     </div>
 
-    <div class="row g-4">
-
-      <!-- Architecture -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h4 class="h4 mb-3">Architecture</h4>
-        <ul class="list-unstyled list-line">
-          <li>All</li>
-          <li>Hospitality</li>
-          <li>Institutional</li>
-          <li>Corporate</li>
-          <li>Culture</li>
-          <li>Mixed-Use</li>
-          <li>Homes</li>
+    <div class="row justify-content-center">
+      <div class="col-12 text-center">
+        <ul class="list-unstyled d-inline-flex mb-0">
+          <li class="me-4"><a href="{% url 'careers' %}">Careers</a></li>
+          <li class="me-4"><a href="{% url 'contact' %}">Contact</a></li>
+          <li><a href="{% url 'about' %}">About</a></li>
         </ul>
       </div>
-
-      <!-- Interior -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h4 class="h4 mb-3">Interior</h4>
-        <ul class="list-unstyled list-line">
-          <li>All</li>
-          <li>Leisure</li>
-          <li>Homes</li>
-          <li>Hotels</li>
-          <li>F&amp;B</li>
-          <li>Brand Experiences</li>
-          <li>Retail</li>
-        </ul>
-      </div>
-
-      <!-- News and Views -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h4 class="h4 mb-3">News &amp; Views</h4>
-        <ul class="list-unstyled list-line">
-          <li>All</li>
-          <li>Featured In</li>
-          <li>Awards</li>
-          <li>Events</li>
-          <li>Blog</li>
-        </ul>
-      </div>
-
-      <!-- About -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h4 class="h4 mb-3">About</h4>
-        <ul class="list-unstyled list-line">
-          <li>Team</li>
-          <li>Clients</li>
-          <li>Values</li>
-          <li>Careers</li>
-          <li>Contact</li>
-        </ul>
-      </div>
-
     </div>
   </div>
 </section>
