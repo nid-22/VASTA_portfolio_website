@@ -115,8 +115,9 @@
     const gallery = document.querySelector('[data-gallery]');
     if (!gallery) return;
 
-    const mainImg = gallery.querySelector('.gallery-main .main-photo');
-    const thumbs = Array.from(gallery.querySelectorAll('.gallery-thumbs .thumb img'));
+  const mainImg = gallery.querySelector('.gallery-main .main-photo');
+  // include all .thumb images (visible and hidden) so the lightbox can navigate every image
+  const thumbs = Array.from(gallery.querySelectorAll('.thumb img'));
 
     // create lightbox DOM
     let lightbox = document.querySelector('.gallery-lightbox');
@@ -135,6 +136,68 @@
     const imageUrls = [];
     if (mainImg) imageUrls.push(mainImg.getAttribute('src'));
     thumbs.forEach(t => imageUrls.push(t.getAttribute('src')));
+
+    // Immediately preload hidden images (the ones represented by +N) so navigation to them is instant.
+    try {
+      const hiddenImgs = Array.from(gallery.querySelectorAll('.gallery-hidden img'));
+      if (hiddenImgs.length) {
+        hiddenImgs.forEach(h => {
+          const url = h.getAttribute('src');
+          if (!url) return;
+          // hint browser to prioritize the image
+          try {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'image';
+            link.href = url;
+            document.head.appendChild(link);
+          } catch (e) {
+            // ignore failures creating preload link
+          }
+          // also create an Image to start the fetch immediately
+          try {
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = url;
+          } catch (e) {}
+        });
+      }
+    } catch (e) {
+      // defensive: if DOM queries fail, ignore and continue to background preload
+    }
+
+    // Secondary background preloader (non-blocking) for all images if any remain uncached.
+    // Use requestIdleCallback when available, otherwise stagger requests.
+    const backgroundPreload = () => {
+      imageUrls.forEach((url) => {
+        try {
+          const img = new Image();
+          img.decoding = 'async';
+          img.src = url;
+        } catch (e) {
+          // ignore
+        }
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      try {
+        requestIdleCallback(backgroundPreload, { timeout: 2000 });
+      } catch (e) {
+        backgroundPreload();
+      }
+    } else {
+      // stagger loads so the browser isn't saturated immediately
+      imageUrls.forEach((url, i) => {
+        setTimeout(() => {
+          try {
+            const img = new Image();
+            img.decoding = 'async';
+            img.src = url;
+          } catch (e) {}
+        }, i * 150);
+      });
+    }
 
     let currentIndex = 0;
 
@@ -162,7 +225,7 @@
     }
 
     if (mainImg) mainImg.addEventListener('click', ()=> openAt(0));
-    thumbs.forEach((t, i) => t.addEventListener('click', ()=> openAt(i + (mainImg ? 1 : 0))));
+  thumbs.forEach((t, i) => t.addEventListener('click', ()=> openAt(i + (mainImg ? 1 : 0))));
 
     btnClose.addEventListener('click', close);
     btnNext.addEventListener('click', next);

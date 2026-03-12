@@ -41,6 +41,17 @@
                         </div>
                       {% endfor %}
                     </div>
+                    {# Render hidden image elements for the remaining images so the lightbox can navigate them #}
+                    {% if total > 5 %}
+                      <div class="gallery-hidden d-none" aria-hidden="true">
+                        {% for image in project.project_images.all|slice:"5:" %}
+                          {# data-index continues after the visible thumbnails: 0=main, 1..4 visible, so start at 5 #}
+                          <div class="thumb" data-index="{{ forloop.counter0|add:'5' }}">
+                            <img loading="lazy" src="{{ image.image.url }}" alt="hidden-thumb" class="img-fluid">
+                          </div>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
                   {% endwith %}
                 {% endwith %}
               </div>
