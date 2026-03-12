@@ -1,8 +1,12 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
 from django.core.mail import send_mail, BadHeaderError
+import logging
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -81,6 +85,33 @@ class ContactView(TemplateView):
         subject = request.POST.get('subject', 'Website contact').strip()
         message = request.POST.get('message', '').strip()
 
+        # Simple server-side validation - collect field-specific errors
+        field_errors = {}
+        if not name:
+            field_errors['name'] = 'Please enter your name.'
+        if not email:
+            field_errors['email'] = 'Please enter your email.'
+        else:
+            try:
+                validate_email(email)
+            except ValidationError:
+                field_errors['email'] = 'Please enter a valid email address.'
+        if not message:
+            field_errors['message'] = 'Please enter a message.'
+
+        is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' or request.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+        if field_errors:
+            # If this is an AJAX request from the vendor JS, return plain text (so it doesn't inject full HTML)
+            if is_ajax:
+                # join field errors into a single message
+                return HttpResponse('\n'.join(field_errors.values()), status=400)
+
+            ctx = self.get_context_data(**kwargs)
+            ctx['field_errors'] = field_errors
+            # keep the POST data accessible to repopulate the form
+            return render(request, self.template_name, ctx)
+
         # Build email body
         body = f"From: {name} <{email}>\n\n{message}"
 
@@ -89,15 +120,26 @@ class ContactView(TemplateView):
 
         try:
             send_mail(subject, body, from_email, [recipient], fail_silently=False)
+            if is_ajax:
+                return HttpResponse('OK')
             context = self.get_context_data(**kwargs)
             context['sent'] = True
             return render(request, self.template_name, context)
         except BadHeaderError:
+            logging.exception("BadHeaderError sending contact email")
+            if is_ajax:
+                return HttpResponse('Invalid header found.', status=400)
             context = self.get_context_data(**kwargs)
             context['error'] = 'Invalid header found.'
             return render(request, self.template_name, context)
         except Exception as e:
-            # Log exception? For now, show a generic error message in template
+            # Log exception for diagnostics
+            logging.exception("Error sending contact email")
+            # If this is an AJAX request and we're in DEBUG, return the raw exception message to help debugging.
+            if is_ajax and getattr(settings, 'DEBUG', False):
+                return HttpResponse(str(e), status=500)
+            if is_ajax:
+                return HttpResponse('An error occurred while sending the message. Please try again later.', status=500)
             context = self.get_context_data(**kwargs)
             context['error'] = 'An error occurred while sending the message. Please try again later.'
             return render(request, self.template_name, context)

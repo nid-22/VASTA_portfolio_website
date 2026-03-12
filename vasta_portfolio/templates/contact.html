@@ -17,25 +17,29 @@
         <div class="row">
           <div class="col-md-6 mb-5 mb-md-0" data-aos="fade-up">
 
-            <form action="{% url 'contact' %}" method="post" role="form" class="php-email-form">
+            <form action="{% url 'contact' %}" method="post" role="form">
               {% csrf_token %}
 
               <div class="row gy-3">
                 <div class="col-md-6 form-group">
                   <label for="name">Name</label>
-                  <input type="text" name="name" class="form-control" id="name" required>
+                  <input type="text" name="name" class="form-control" id="name" value="{{ request.POST.name|default_if_none:'' }}">
+                  {% if field_errors.name %}<div class="text-danger small mt-1">{{ field_errors.name }}</div>{% endif %}
                 </div>
                 <div class="col-md-6 form-group">
                   <label for="name">Email</label>
-                  <input type="email" class="form-control" name="email" id="email" required>
+                  <input type="email" class="form-control" name="email" id="email" value="{{ request.POST.email|default_if_none:'' }}">
+                  {% if field_errors.email %}<div class="text-danger small mt-1">{{ field_errors.email }}</div>{% endif %}
                 </div>
                 <div class="col-md-12 form-group">
                   <label for="name">Subject</label>
-                  <input type="text" class="form-control" name="subject" id="subject" required>
+                  <input type="text" class="form-control" name="subject" id="subject" value="{{ request.POST.subject|default_if_none:'Website contact' }}">
+                  {% if field_errors.subject %}<div class="text-danger small mt-1">{{ field_errors.subject }}</div>{% endif %}
                 </div>
                 <div class="col-md-12 form-group">
                   <label for="name">Message</label>
-                  <textarea class="form-control" name="message" cols="30" rows="10" required></textarea>
+                  <textarea class="form-control" name="message" cols="30" rows="10">{{ request.POST.message|default_if_none:'' }}</textarea>
+                  {% if field_errors.message %}<div class="text-danger small mt-1">{{ field_errors.message }}</div>{% endif %}
                 </div>
 
                 <div class="col-md-12 my-3">

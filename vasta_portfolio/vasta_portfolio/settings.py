@@ -156,6 +156,25 @@ TINYMCE_DEFAULT_CONFIG = {
     'content_style': 'body { font-family: Raleway, sans-serif; line-height:1.7; }',
 }
 
+# Email configuration
+# By default (no EMAIL_HOST set) we use the console backend for local development.
+if os.environ.get('EMAIL_HOST'):
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes')
+    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('1', 'true', 'yes')
+    # Optional: default from address
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@vastarchitects.in')
+else:
+    # Safe default for local development: print emails to console
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_USE_TLS = False
+
 # Extra media loaded on the page that hosts the widget (not inside the iframe)
 # Paths are relative to STATIC_URL (django-tinymce will prefix STATIC_URL).
 TINYMCE_EXTRA_MEDIA = {
