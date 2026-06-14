@@ -1,31 +1,59 @@
-## Ignore all XML files (requested)
-*.xml
-
-# Common optional ignores (uncomment if you want them)
-# Python cache
+# Python
 *.pyc
+*.pyo
+*.pyd
 __pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
 
 # Virtual environments
 .venv/
 venv/
-.env
-.ppk
+venv312/
+env/
+ENV/
 
-# Django media/uploads
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+local_settings.py
+
+# Media uploads (user-uploaded content — back up separately)
 media/
 
-# Editor directories
+# Environment / secrets
+.env
+.env.*
+*.ppk
+*.pem
+*.key
+
+# IDE / editors
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# Testing and coverage reports
+# Testing / coverage
 .tox/
+.coverage
+.coverage.*
 htmlcov/
 .pytest_cache/
+coverage.xml
 
+# Misc
+*.xml
 project_images/
