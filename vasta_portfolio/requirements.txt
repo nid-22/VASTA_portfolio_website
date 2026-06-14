@@ -2,6 +2,9 @@
 asgiref==3.8.1
 boto3==1.35.96
 botocore==1.35.96
+cloudinary==1.42.1
+dj-database-url==2.3.0
+django-cloudinary-storage==0.3.0
 django-dotenv==1.4.2
 django-storages==1.14.4
 django-tinymce==4.1.0

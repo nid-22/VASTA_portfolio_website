@@ -1,18 +1,27 @@
-"""Production database settings.
+﻿import os
+import dj_database_url
+from .settings import *
 
-This file should define a DATABASES dict used in production. It's strongly
-recommended to supply production credentials via environment variables and
-not to commit secrets into source control.
-"""
-import os
+DEBUG = False
 
+# Railway provides DATABASE_URL automatically when PostgreSQL plugin is added
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('PROD_DB_ENGINE'),
-        'NAME': os.environ.get('PROD_DB_NAME', os.environ.get('RDS_DB_NAME')),
-        'USER': os.environ.get('PROD_DB_USER', os.environ.get('RDS_USER')),
-        'PASSWORD': os.environ.get('PROD_DB_PASSWORD', os.environ.get('RDS_PASSWORD')),
-        'HOST': os.environ.get('PROD_DB_HOST', os.environ.get('RDS_HOST')),
-        'PORT': os.environ.get('PROD_DB_PORT', os.environ.get('RDS_PORT', '5432')),
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+
+# WhiteNoise configuration
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_AUTOREFRESH = True
+WHITENOISE_COMPRESSION_OFFLINE = True
+
+# Cloudinary credentials (used directly by the Cloudinary SDK in import scripts)
+# Images are uploaded via cloudinary.uploader.upload() and URLs stored as plain strings
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
 }
