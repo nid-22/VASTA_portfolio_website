@@ -45,12 +45,11 @@ class ProjectListView(ListView):
         # Modify the context to include your custom data
         context['projects'] = [
             {
-                'id':project.id,
+                'id': project.id,
                 'project_name': project.heading,
-                'cover_image': project.cover_image.url if project.cover_image else None,
+                'cover_image': project.cover_image or None,
                 'type': project.typology.name,
                 'get_absolute_url': project.get_absolute_url,
-                'grid_shape': project.grid_shape,
             }
             for project in context['object_list']
         ]

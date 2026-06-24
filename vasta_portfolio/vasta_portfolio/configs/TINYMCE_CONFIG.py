@@ -8,7 +8,7 @@ TINYMCE_CONFIG = {
 
     # Plugins
     "plugins": (
-        "advlist autolink lists link image editimage charmap preview anchor "
+        "advlist autolink lists link image charmap preview anchor "
         "searchreplace visualblocks code fullscreen "
         "insertdatetime media table wordcount help"
     ),

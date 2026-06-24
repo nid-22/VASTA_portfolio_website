@@ -22,7 +22,7 @@
                 <div class="gallery-main mb-3">
                   {% comment %} Use project.project_images only; first image is main photo if present {% endcomment %}
                   {% if project.project_images.all|length > 0 %}
-                    <img loading="lazy" src="{{ project.project_images.all.0.image.url }}" alt="{{ project.heading }}" class="img-fluid main-photo" data-index="0">
+                    <img loading="lazy" src="{{ project.project_images.all.0.image }}" alt="{{ project.heading }}" class="img-fluid main-photo" data-index="0">
                   {% endif %}
                 </div>
 
@@ -32,7 +32,7 @@
                     <div class="gallery-thumbs d-flex justify-content-center gap-2 flex-wrap" data-thumbs>
                       {% for image in project.project_images.all|slice:"1:5" %}
                         <div class="thumb" data-index="{{ forloop.counter0|add:1 }}">
-                          <img loading="lazy" src="{{ image.image.url }}" alt="thumb" class="img-fluid">
+                          <img loading="lazy" src="{{ image.image }}" alt="thumb" class="img-fluid">
                           {% if forloop.last and total|add:"0" > 5 %}
                             {% with extra=total|add:"-5" %}
                               <div class="thumb-count">+{{ extra }}</div>
@@ -47,7 +47,7 @@
                         {% for image in project.project_images.all|slice:"5:" %}
                           {# data-index continues after the visible thumbnails: 0=main, 1..4 visible, so start at 5 #}
                           <div class="thumb" data-index="{{ forloop.counter0|add:'5' }}">
-                            <img loading="lazy" src="{{ image.image.url }}" alt="hidden-thumb" class="img-fluid">
+                            <img loading="lazy" src="{{ image.image }}" alt="hidden-thumb" class="img-fluid">
                           </div>
                         {% endfor %}
                       </div>
