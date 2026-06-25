@@ -4,6 +4,25 @@ from .settings import *
 
 DEBUG = False
 
+# --- Allowed hosts / CSRF -------------------------------------------------
+# Production domains that must always be served, regardless of the env var.
+# These are merged with anything provided via DJANGO_ALLOWED_HOSTS /
+# CSRF_TRUSTED_ORIGINS so a missing/incomplete env var can't cause a 400.
+_DEFAULT_HOSTS = [
+    'vastaportfoliowebsite-production.up.railway.app',
+    'vastarchitects.in',
+    'www.vastarchitects.in',
+]
+
+ALLOWED_HOSTS = sorted(set(
+    [h for h in ALLOWED_HOSTS if h and h != '*'] + _DEFAULT_HOSTS
+))
+
+CSRF_TRUSTED_ORIGINS = sorted(set(
+    CSRF_TRUSTED_ORIGINS
+    + [f'https://{h}' for h in _DEFAULT_HOSTS]
+))
+
 # Use DATABASE_URL (set automatically by Railway PostgreSQL plugin).
 # Falls back to the individual DB_* vars from base settings if not set.
 _database_url = os.environ.get('DATABASE_URL')
