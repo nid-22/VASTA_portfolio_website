@@ -37,7 +37,7 @@ class ProjectListView(ListView):
 
     def get_queryset(self):
         # Order projects by the order_to_display_id field so the template shows them in that order
-        return Project.objects.all().order_by('order_to_display_id')
+        return Project.objects.filter(is_active=True, is_deleted=False).order_by('order_to_display_id')
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get a context
