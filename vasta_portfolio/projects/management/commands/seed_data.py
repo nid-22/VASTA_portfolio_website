@@ -91,6 +91,8 @@ PROJECTS = [
         'city': 'Bengaluru',
         'typology': 'Residential',
         'sub_type': 'Apartment',
+        'short_description': 'Abode is a grounded apartment series celebrating raw materials, rustic textures, and honest, earthy living.',
+        'long_description': 'The Abode series embraces raw, rustic architecture using exposed brick, local granite, and cement finishes. Earthy materials and simple detailing create grounded homes with quiet charm, celebrating material honesty and a timeless, contextual approach to contemporary apartment living.',
     },
     {
         'sno': 7,
@@ -171,6 +173,8 @@ PROJECTS = [
         'city': 'Bengaluru',
         'typology': 'Residential',
         'sub_type': 'Apartment',
+        'short_description': 'A calm, earthy residence that blends modern design with traditional warmth and a strong sense of home.',
+        'long_description': 'Abode Tranquil is conceived as a welcoming, rooted home nestled within its context. Earthy materials and warm tones create comfort, while a perforated facade wall gives the building a distinct street presence. Modern forms are softened with traditional influences, allowing the house to stand out quietly yet confidently.',
     },
     {
         'sno': 17,

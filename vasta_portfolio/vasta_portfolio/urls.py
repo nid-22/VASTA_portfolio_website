@@ -17,10 +17,17 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.templatetags.static import static as static_url
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # Google probes https://<domain>/favicon.ico directly, so it has to resolve.
+    path(
+        'favicon.ico',
+        RedirectView.as_view(url=static_url('assets/img/favicon.ico'), permanent=True),
+    ),
     path('', include('projects.urls')),
     path('blog/', include(('blog.urls', 'blog'), namespace='blog')),
     #  path('tinymce/', include('tinymce.urls')),
