@@ -1,52 +1,28 @@
-
 {% extends 'base.html' %}
 {% load static %}
-{% block about %}
-<section class="section pb-5">
-      <div class="container">
-        <div class="row mb-5 align-items-end">
-          <div class="col-md-12" data-aos="fade-up">
 
-            <div class="about-hero p-4 p-md-5 text-white">
-              <h2>About Us</h2>
-              <p class="mb-0 pl-2">We design thoughtful spaces that balance aesthetics, function, and context.</p>
-            </div>
-          </div>
+{% block title %}About · VAST Architects{% endblock %}
+{% block body_class %}about-page{% endblock %}
+{% block content %}
+  <section class="inner-hero inner-hero--image" aria-labelledby="about-title">
+    <img src="{% static 'assets/img/cover_about.webp' %}" alt="VAST Architects studio and team" fetchpriority="high">
+    <div class="inner-hero-copy page-shell">
+      <p class="eyebrow">The studio</p>
+      <h1 id="about-title">About us</h1>
+    </div>
+  </section>
 
-        </div>
-
-        <div class="row">
-          <!-- <div class="col-md-4 ml-auto order-2" data-aos="fade-up">
-            <div class="about-image">
-              <img src="{% static 'assets/img/venk_tej.webp' %}" alt="About image" class="img-fluid rounded">
-            </div>
-          </div> -->
-
-          <div class="col-md-7 mb-5 mb-md-0" data-aos="fade-up">
-          <p>
-            We are a Bangalore-based architecture and interior design firm driven by clarity of design and attention to detail.
-            Our work blends contemporary aesthetics with practical solutions, shaped by context, culture, and client needs.
-          </p>
-          <p>
-            From residential homes to commercial spaces, we approach every project with a strong design intent, focusing on
-            spatial quality, material honesty, and timeless appeal.
-          </p>
-          <p>
-            Our process is collaborative and transparent—working closely with clients from concept to completion to deliver
-            spaces that are both functional and expressive.
-          </p>
-          <p>
-            Rooted in Bangalore and inspired by its evolving urban fabric, we aim to create meaningful environments that
-            enhance everyday living.
-          </p>
-          <p><a href="#" class="readmore">View Our Projects</a></p>
-        </div>
-
-
-        </div>
-
+  <section class="about-content page-shell">
+    <p class="about-lead">VAST is an architecture and interior design studio in Bangalore.</p>
+    <div class="about-columns">
+      <div>
+        <p>We work across homes, workplaces and spaces for gathering. Each project begins with the people who will use it, the site it belongs to and the practical realities of building it.</p>
+        <p>Our process is collaborative and direct. We stay involved from the first conversation through construction, paying close attention to proportion, material and the details that shape everyday use.</p>
       </div>
-
-    </section></html>
+      <div>
+        <p>We are interested in work that feels clear, useful and particular to its setting. That means listening carefully, testing ideas and making decisions that hold up beyond the first impression.</p>
+        <a class="text-link" href="{% url 'project-list' %}#work">View our work <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
 {% endblock %}
-
