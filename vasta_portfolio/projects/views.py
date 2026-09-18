@@ -76,6 +76,12 @@ class ProjectListView(ListView):
         return context
 
 
+class LegacyProjectListView(ProjectListView):
+    """Keep the original portfolio homepage available at the site root."""
+
+    template_name = 'projects/index_legacy.html'
+
+
 
 class ProjectDetailView(DetailView):
     model = Project

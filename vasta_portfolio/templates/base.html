@@ -34,12 +34,12 @@
 <body class="{% block body_class %}{% endblock %}">
   <a class="skip" href="#main">Skip to content</a>
   <header class="header" id="top">
-    <a class="wordmark" href="{% url 'project-list' %}" aria-label="VAST Architects home">v<span>a</span>st <span>architects</span></a>
+    <a class="wordmark" href="{% url 'new-home' %}" aria-label="VAST Architects home">v<span>a</span>st <span>architects</span></a>
     <nav aria-label="Main navigation">
-      <a href="{% url 'project-list' %}#work">Work</a>
-      <a href="{% url 'project-list' %}#studio">Studio</a>
+      <a href="{% url 'new-home' %}#work">Work</a>
+      <a href="{% url 'new-home' %}#studio">Studio</a>
       <a href="{% url 'blog:list' %}">Journal</a>
-      <a class="contact-nav" href="{% url 'project-list' %}#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+      <a class="contact-nav" href="{% url 'new-home' %}#contact">Let’s talk <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
 
