@@ -893,3 +893,39 @@ h6,
   opacity: 1 !important;
   z-index: 2 !important;
 }
+
+.legacy-wordmark {
+  color: #111;
+  font-family: "DM Sans", Arial, sans-serif;
+  font-size: 39px;
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.legacy-wordmark span {
+  color: #a35328;
+}
+
+.legacy-wordmark,
+.legacy-wordmark span {
+  transition: color 0.2s ease, -webkit-text-fill-color 0.2s ease;
+}
+
+.legacy-wordmark:hover,
+.legacy-wordmark:hover span {
+  color: #a35328 !important;
+  -webkit-text-fill-color: #a35328 !important;
+}
+
+.legacy-wordmark-footer {
+  display: inline-block;
+  font-size: 32px;
+}
+
+@media (max-width: 600px) {
+  .legacy-wordmark {
+    font-size: 32px;
+  }
+}

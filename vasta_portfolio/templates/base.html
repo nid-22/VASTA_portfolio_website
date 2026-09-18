@@ -26,9 +26,9 @@
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/css/vast-concept.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/css/django-pages.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}?v=20260918-logo3" rel="stylesheet">
+  <link href="{% static 'assets/css/vast-concept.css' %}?v=20260918-logo3" rel="stylesheet">
+  <link href="{% static 'assets/css/django-pages.css' %}?v=20260918-projectimage1" rel="stylesheet">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -36,10 +36,10 @@
   <header class="header" id="top">
     <a class="wordmark" href="{% url 'new-home' %}" aria-label="VAST Architects home">v<span>a</span>st <span>architects</span></a>
     <nav aria-label="Main navigation">
-      <a href="{% url 'new-home' %}#work">Work</a>
+      <a href="{% url 'project-list' %}">Work</a>
       <a href="{% url 'new-home' %}#studio">Studio</a>
       <a href="{% url 'blog:list' %}">Journal</a>
-      <a class="contact-nav" href="{% url 'new-home' %}#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+      <a class="contact-nav" href="{% url 'contact' %}">Let’s talk <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
 

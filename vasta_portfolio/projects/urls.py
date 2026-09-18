@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from .views import (
     AboutView,
     CareersView,
@@ -16,8 +17,13 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('', LegacyProjectListView.as_view(), name='project-list'),
-    path('home/', ProjectListView.as_view(), name='new-home'),
+    path('', ProjectListView.as_view(), name='new-home'),
+    path(
+        'home/',
+        RedirectView.as_view(pattern_name='new-home', permanent=False),
+        name='home-redirect',
+    ),
+    path('work/', LegacyProjectListView.as_view(), name='project-list'),
     path('tinymce/upload/', tinymce_upload, name='tinymce_upload'),
     path('projects/<slug:slug>/', ProjectDetailView.as_view(), name='project_detail'),
     path('about/', AboutView.as_view(), name='about'),

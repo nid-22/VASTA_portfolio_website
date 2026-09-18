@@ -9,7 +9,8 @@
 [hidden]{display:none!important}
 .wordmark{color:#111;font-weight:400;letter-spacing:-.055em}
 .wordmark span,footer .wordmark span{font-size:inherit;letter-spacing:inherit;font-weight:inherit;color:var(--accent)}
-.wordmark:hover{color:#111}
+.wordmark,.wordmark span{transition:color .2s ease,-webkit-text-fill-color .2s ease}
+.header .wordmark:hover,.header .wordmark:hover span,footer .wordmark:hover,footer .wordmark:hover span{color:var(--accent)!important;-webkit-text-fill-color:var(--accent)!important}
 .intro-aside{min-width:0;padding-bottom:9px}
 h1{font-size:clamp(22px,2.5vw,42px);line-height:1.15;letter-spacing:-.035em}
 .hero:after{display:none}

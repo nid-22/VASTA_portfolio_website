@@ -96,11 +96,11 @@
 
   <section id="contact" class="contact section-pad" aria-labelledby="contact-title">
     <span class="eyebrow">Have a project in mind?</span>
-    <a href="mailto:design@vastarchitects.in" class="contact-title">
+    <a href="{% url 'contact' %}" class="contact-title">
       <h2 id="contact-title">Let’s make<br>room for it.</h2>
       <span aria-hidden="true">↗</span>
     </a>
-    <div class="contact-bottom"><a href="mailto:design@vastarchitects.in">design@vastarchitects.in</a><span>Bangalore, India</span></div>
+    <div class="contact-bottom"><a href="{% url 'contact' %}">Start an enquiry ↗</a><span>Bangalore, India</span></div>
   </section>
 {% endblock %}
 

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.base import TemplateView
-from django.core.mail import send_mail, BadHeaderError
+from django.core.mail import BadHeaderError
 import logging
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
@@ -77,7 +77,7 @@ class ProjectListView(ListView):
 
 
 class LegacyProjectListView(ProjectListView):
-    """Keep the original portfolio homepage available at the site root."""
+    """Keep the original portfolio homepage available as the work page."""
 
     template_name = 'projects/index_legacy.html'
 
@@ -103,26 +103,39 @@ class AboutView(TemplateView):
 class ContactView(TemplateView):
     template_name = "contact.html"
 
+    project_type_choices = {
+        'architecture': 'Architecture',
+        'interiors': 'Interior design',
+        'architecture-interiors': 'Architecture + interiors',
+        'landscape': 'Landscape',
+        'other': 'Something else',
+    }
+
     def post(self, request, *args, **kwargs):
-        # Read form fields
         name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip()
-        subject = request.POST.get('subject', 'Website contact').strip()
+        project_type = request.POST.get('project_type', '').strip()
+        project_location = request.POST.get('project_location', '').strip()
+        call_time = request.POST.get('call_time', '').strip()
         message = request.POST.get('message', '').strip()
 
-        # Simple server-side validation - collect field-specific errors
         field_errors = {}
         if not name:
             field_errors['name'] = 'Please enter your name.'
-        if not email:
-            field_errors['email'] = 'Please enter your email.'
-        else:
+        if not phone:
+            field_errors['phone'] = 'Please enter a phone number so we can call you.'
+        elif len(''.join(character for character in phone if character.isdigit())) < 7:
+            field_errors['phone'] = 'Please enter a valid phone number.'
+        if email:
             try:
                 validate_email(email)
             except ValidationError:
                 field_errors['email'] = 'Please enter a valid email address.'
+        if project_type not in self.project_type_choices:
+            field_errors['project_type'] = 'Please choose a project type.'
         if not message:
-            field_errors['message'] = 'Please enter a message.'
+            field_errors['message'] = 'Please tell us a little about your project.'
 
         is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest' or request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
@@ -137,14 +150,38 @@ class ContactView(TemplateView):
             # keep the POST data accessible to repopulate the form
             return render(request, self.template_name, ctx)
 
-        # Build email body
-        body = f"From: {name} <{email}>\n\n{message}"
+        project_type_label = self.project_type_choices[project_type]
+        subject = f"New website enquiry — {name}"
+        body = "\n".join([
+            "A new project enquiry was submitted through vastarchitects.in.",
+            "",
+            f"Name: {name}",
+            f"Phone: {phone}",
+            f"Email: {email or 'Not provided'}",
+            f"Project type: {project_type_label}",
+            f"Project location: {project_location or 'Not provided'}",
+            f"Preferred time to call: {call_time or 'Not provided'}",
+            "",
+            "About the project:",
+            message,
+        ])
 
-        recipient = 'design@vastarchitects.in'
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SERVER_EMAIL', None) or email or 'webmaster@localhost'
+        recipient = getattr(settings, 'CONTACT_RECIPIENT_EMAIL', 'vast.architects@gmail.com')
+        from_email = (
+            getattr(settings, 'DEFAULT_FROM_EMAIL', None)
+            or getattr(settings, 'SERVER_EMAIL', None)
+            or 'design@vastarchitects.in'
+        )
 
         try:
-            send_mail(subject, body, from_email, [recipient], fail_silently=False)
+            email_message = EmailMessage(
+                subject=subject,
+                body=body,
+                from_email=from_email,
+                to=[recipient],
+                reply_to=[email] if email else None,
+            )
+            email_message.send(fail_silently=False)
             if is_ajax:
                 return HttpResponse('OK')
             context = self.get_context_data(**kwargs)

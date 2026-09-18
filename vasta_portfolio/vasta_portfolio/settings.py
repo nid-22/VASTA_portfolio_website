@@ -181,6 +181,7 @@ TINYMCE_DEFAULT_CONFIG = {
 
 # Email configuration
 # By default (no EMAIL_HOST set) we use the console backend for local development.
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'design@vastarchitects.in')
 if os.environ.get('EMAIL_HOST'):
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = os.environ.get('EMAIL_HOST')
@@ -189,8 +190,6 @@ if os.environ.get('EMAIL_HOST'):
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('1', 'true', 'yes')
     EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() in ('1', 'true', 'yes')
-    # Optional: default from address
-    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'no-reply@vastarchitects.in')
 else:
     # Safe default for local development: print emails to console
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
