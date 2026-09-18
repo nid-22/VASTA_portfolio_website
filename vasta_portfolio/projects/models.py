@@ -52,6 +52,20 @@ class Project(BaseModel):
     location = models.ForeignKey(Location,on_delete=models.PROTECT, null=True, blank=True)
     client = models.CharField(max_length=100, null=True, blank=True)
     cover_image = models.CharField(max_length=500, null=True, blank=True)
+    carousel_desktop_image = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        verbose_name='Desktop carousel image',
+        help_text='Landscape image used by the homepage carousel on desktop and tablet.',
+    )
+    carousel_mobile_image = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        verbose_name='Phone carousel image',
+        help_text='Portrait image used by the homepage carousel on phones.',
+    )
     # ordering integer for display in the portfolio grid (smaller numbers show first)
     order_to_display_id = models.PositiveIntegerField(default=0, help_text='Lower values appear earlier in the list')
 
@@ -65,6 +79,21 @@ class Project(BaseModel):
 
     def get_absolute_url(self):
         return reverse('project_detail', kwargs={'slug':self.slug})
+
+    @property
+    def desktop_carousel_image_url(self):
+        """Prefer the desktop carousel image, then fall back to the cover."""
+        return self.carousel_desktop_image or self.cover_image or ''
+
+    @property
+    def mobile_carousel_image_url(self):
+        """Prefer the phone image, then desktop carousel image, then cover."""
+        return (
+            self.carousel_mobile_image
+            or self.carousel_desktop_image
+            or self.cover_image
+            or ''
+        )
 
 class ProjectImage(BaseModel):
     """One image attached to a Project. Kept as a separate model so the

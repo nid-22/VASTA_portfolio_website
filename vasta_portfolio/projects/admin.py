@@ -4,9 +4,52 @@ import cloudinary.uploader
 from django.contrib import admin
 from django import forms
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.html import format_html
+from PIL import Image, UnidentifiedImageError
 
 from .models import Typology, Location, Project, ProjectImage, SubType
+
+
+MAX_CAROUSEL_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB
+DESKTOP_CAROUSEL_MIN_SIZE = (1920, 1080)
+MOBILE_CAROUSEL_MIN_SIZE = (1080, 1350)
+
+
+def validate_carousel_image(uploaded_file, *, minimum_size, orientation, label):
+    """Validate carousel uploads before sending them to Cloudinary."""
+    if not uploaded_file:
+        return uploaded_file
+
+    if uploaded_file.size > MAX_CAROUSEL_IMAGE_SIZE:
+        raise ValidationError(f'{label} must be 20 MB or smaller.')
+
+    content_type = getattr(uploaded_file, 'content_type', '')
+    if content_type and not content_type.startswith('image/'):
+        raise ValidationError(f'{label} must be an image file.')
+
+    try:
+        image = Image.open(uploaded_file)
+        width, height = image.size
+        image.verify()
+    except (UnidentifiedImageError, OSError, ValueError):
+        raise ValidationError(f'{label} could not be read as an image.')
+    finally:
+        uploaded_file.seek(0)
+
+    minimum_width, minimum_height = minimum_size
+    if width < minimum_width or height < minimum_height:
+        raise ValidationError(
+            f'{label} must be at least {minimum_width} × {minimum_height} px. '
+            f'This file is {width} × {height} px.'
+        )
+
+    if orientation == 'landscape' and width <= height:
+        raise ValidationError(f'{label} must be a landscape image (wider than it is tall).')
+    if orientation == 'portrait' and height <= width:
+        raise ValidationError(f'{label} must be a portrait image (taller than it is wide).')
+
+    return uploaded_file
 
 
 class OptionalFileField(forms.FileField):
@@ -87,11 +130,48 @@ class ProjectImageUploadForm(forms.ModelForm):
         label='Upload cover image',
         help_text='Upload a new cover image (will be uploaded to Cloudinary)',
     )
+    carousel_desktop_image_file = OptionalFileField(
+        widget=forms.FileInput(attrs={'accept': 'image/*'}),
+        required=False,
+        label='Upload desktop carousel image',
+        help_text='Landscape, at least 1920 × 1080 px. Maximum file size: 20 MB.',
+    )
+    carousel_mobile_image_file = OptionalFileField(
+        widget=forms.FileInput(attrs={'accept': 'image/*'}),
+        required=False,
+        label='Upload phone carousel image',
+        help_text='Portrait, at least 1080 × 1350 px. Maximum file size: 20 MB.',
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['cover_image'].required = False
         self.fields['cover_image'].help_text = 'Current cover image URL (or paste a URL directly)'
+        self.fields['carousel_desktop_image'].required = False
+        self.fields['carousel_desktop_image'].help_text = (
+            'Current desktop carousel image URL. If empty, the cover image is used.'
+        )
+        self.fields['carousel_mobile_image'].required = False
+        self.fields['carousel_mobile_image'].help_text = (
+            'Current phone carousel image URL. If empty, the desktop carousel image '
+            'or cover image is used.'
+        )
+
+    def clean_carousel_desktop_image_file(self):
+        return validate_carousel_image(
+            self.cleaned_data.get('carousel_desktop_image_file'),
+            minimum_size=DESKTOP_CAROUSEL_MIN_SIZE,
+            orientation='landscape',
+            label='Desktop carousel image',
+        )
+
+    def clean_carousel_mobile_image_file(self):
+        return validate_carousel_image(
+            self.cleaned_data.get('carousel_mobile_image_file'),
+            minimum_size=MOBILE_CAROUSEL_MIN_SIZE,
+            orientation='portrait',
+            label='Phone carousel image',
+        )
 
     class Meta:
         model = Project
@@ -106,6 +186,73 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ('typology', 'location', 'project_year', 'is_active')
     list_editable = ('order_to_display_id',)
     ordering = ('order_to_display_id',)
+    readonly_fields = ('carousel_desktop_preview', 'carousel_mobile_preview')
+    fieldsets = (
+        ('Project details', {
+            'fields': (
+                'heading', 'slug', 'short_description', 'long_description',
+                'project_year', 'status', 'typology', 'sub_type', 'size',
+                'content', 'location', 'client',
+            ),
+        }),
+        ('Project grid image', {
+            'fields': ('cover_image', 'cover_image_file'),
+        }),
+        ('Homepage carousel', {
+            'description': (
+                'Upload separate high-resolution images for the homepage carousel. '
+                'Desktop falls back to the project cover; phone falls back to the '
+                'desktop carousel image and then the cover.'
+            ),
+            'fields': (
+                'carousel_desktop_image', 'carousel_desktop_image_file',
+                'carousel_desktop_preview', 'carousel_mobile_image',
+                'carousel_mobile_image_file', 'carousel_mobile_preview',
+            ),
+        }),
+        ('Display and availability', {
+            'fields': ('order_to_display_id', 'is_active', 'is_deleted'),
+        }),
+    )
+
+    @admin.display(description='Desktop preview')
+    def carousel_desktop_preview(self, obj):
+        if obj and obj.carousel_desktop_image:
+            return format_html(
+                '<img src="{}" alt="" style="max-width:420px; max-height:180px; '
+                'object-fit:cover; border-radius:3px;" />',
+                obj.carousel_desktop_image,
+            )
+        return 'No desktop image set — the project cover will be used.'
+
+    @admin.display(description='Phone preview')
+    def carousel_mobile_preview(self, obj):
+        if obj and obj.carousel_mobile_image:
+            return format_html(
+                '<img src="{}" alt="" style="max-width:180px; max-height:280px; '
+                'object-fit:cover; border-radius:3px;" />',
+                obj.carousel_mobile_image,
+            )
+        return 'No phone image set — the desktop carousel image or cover will be used.'
+
+    def _upload_carousel_image(self, request, obj, form, upload_field, model_field):
+        uploaded_file = form.cleaned_data.get(upload_field)
+        if not uploaded_file:
+            return
+
+        try:
+            result = cloudinary.uploader.upload(
+                uploaded_file,
+                folder='vast_projects/carousel',
+                resource_type='image',
+            )
+            setattr(obj, model_field, result['secure_url'])
+        except Exception as exc:
+            self.message_user(
+                request,
+                f'{form.fields[upload_field].label} upload failed: {exc}',
+                level='error',
+            )
 
     def save_model(self, request, obj, form, change):
         cover_file = form.cleaned_data.get('cover_image_file')
@@ -119,6 +266,21 @@ class ProjectAdmin(admin.ModelAdmin):
                 obj.cover_image = result['secure_url']
             except Exception as e:
                 self.message_user(request, f'Cover image upload failed: {e}', level='error')
+
+        self._upload_carousel_image(
+            request,
+            obj,
+            form,
+            'carousel_desktop_image_file',
+            'carousel_desktop_image',
+        )
+        self._upload_carousel_image(
+            request,
+            obj,
+            form,
+            'carousel_mobile_image_file',
+            'carousel_mobile_image',
+        )
 
         super().save_model(request, obj, form, change)
 

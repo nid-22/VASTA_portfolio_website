@@ -1,200 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 {% load static %}
 <head>
   <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}VAST Architects{% endblock %}</title>
+  <meta name="description" content="Architecture, interiors and landscape by VAST Architects. A Bangalore-based design practice shaping spaces for living, work and everything in between.">
+  <meta name="keywords" content="VAST Architects, architecture studio, interior design, landscape design, Bangalore">
 
-  <title>VAST Architects</title>
-  <meta content="VAST Architects is an interdisciplinary architecture, interior and landscape design studio crafting spaces for the emerging future of work, leisure and living." name="description">
-  <meta content="VAST Architects, architecture studio, interior design, landscape design" name="keywords">
-
-  <!-- Favicons -->
-  <!-- Google's crawler picks the largest icon it is offered, so every entry
-       here has to be the real logo -- not a leftover template icon. -->
+  <!-- Existing favicon set retained unchanged. -->
   <link rel="icon" href="{% static 'assets/img/favicon.ico' %}" sizes="any">
   <link rel="icon" type="image/png" sizes="48x48" href="{% static 'assets/img/favicon-48.png' %}">
   <link rel="icon" type="image/png" sizes="96x96" href="{% static 'assets/img/favicon-96.png' %}">
   <link rel="icon" type="image/png" sizes="192x192" href="{% static 'assets/img/favicon-192.png' %}">
   <link rel="icon" type="image/png" sizes="512x512" href="{% static 'assets/img/favicon-512.png' %}">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/img/apple-touch-icon.png' %}">
-  <!-- Windows tile / theme color -->
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="{% static 'assets/img/favicon-192.png' %}">
   <meta name="theme-color" content="#ffffff">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=https://fonts.googleapis.com/css?family=Inconsolata:400,500,600,700|Raleway:400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600&amp;display=swap" rel="stylesheet">
   <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
-
-
-  <!-- Template Main CSS File -->
   <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
-
-
+  <link href="{% static 'assets/css/vast-concept.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/django-pages.css' %}" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
 </head>
-
-<body>
-
-  <!-- ======= Navbar ======= -->
-  <div class="collapse navbar-collapse custom-navmenu" id="main-navbar">
-    <div class="container py-2 py-md-5">
-      <div class="row align-items-start">
-        <div class="col-md-2">
-          <ul class="custom-menu">
-            <li class="active"><a href="{% url 'project-list' %}">Home</a></li>
-            <li><a href="{% url 'about' %}">About Us</a></li>
-            <li><a href="{% url 'project-list' %}">Works</a></li>
-            <li><a href="{% url 'blog:list' %}">Blog</a></li>
-            <li><a href="{% url 'contact' %}">Contact Us</a></li>
-          </ul>
-        </div>
-        <div class="col-md-6 d-none d-md-block  mr-auto">
-          <div class="tweet d-flex">
-<!--            <span class="bi bi-twitter text-white mt-2 mr-3"></span>-->
-            <div>
-              <p><em>We are an interdisciplinary team that aspires to craft spaces that address the emerging future of work, leisure and living, and the manner in which we build. <br> <a href="#">instagram.com/vast.architects/</a></em></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 d-none d-md-block">
-          <h3>Contact</h3>
-          <p>For project, interior, and collaboration inquiries, please contact our studio. <br> <a href="#">design@vastarchitects.in</a></p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <nav class="navbar navbar-light custom-navbar">
-    <div class="container">
-      <a class="navbar-brand" href="{% url 'project-list' %}">
-        <img src="{% static 'assets/img/vastarchitects.png' %}" alt="Image" class="img-fluid"
-        style="max-width: 250px; height: auto;">
-      </a>
-
-      <a href="#" class="burger" data-bs-toggle="collapse" data-bs-target="#main-navbar">
-        <span></span>
-      </a>
-    </div>
-  </nav>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header" id="top">
+    <a class="wordmark" href="{% url 'new-home' %}" aria-label="VAST Architects home">v<span>a</span>st <span>architects</span></a>
+    <nav aria-label="Main navigation">
+      <a href="{% url 'new-home' %}#work">Work</a>
+      <a href="{% url 'new-home' %}#studio">Studio</a>
+      <a href="{% url 'blog:list' %}">Journal</a>
+      <a class="contact-nav" href="{% url 'new-home' %}#contact">Let’s talk <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
   <main id="main">
+    {% block content %}{% endblock %}
+    {% block projects %}{% endblock %}
+    {% block single %}{% endblock %}
+    {% block contact %}{% endblock %}
+    {% block about %}{% endblock %}
+  </main>
 
-    {% block projects %}
-    {% endblock %}
-    {% block single %}
-    {% endblock %}
-    {% block contact %}
-    {% endblock %}
-    {% block about %}
-    {% endblock %}
-
-<!-- ======= Practice Areas Section ======= -->
-<section class="section services">
-  <div class="container">
-
-    <div class="row justify-content-center text-center mb-5">
-      <div class="col-lg-6">
-        <!-- replace heading with logo -->
-        <img src="{% static 'assets/img/vastarchitects.png' %}" alt="VAST Architects" style="max-width:220px; height:auto;">
-        <!-- single-line descriptor below the logo -->
-        <p class="small text-muted mt-2 mb-0">Architecture &nbsp; | &nbsp; Interior &nbsp; | &nbsp; Landscape</p>
-      </div>
+  <footer>
+    <a href="#top" class="wordmark" aria-label="Back to top">v<span>a</span>st <span>architects</span></a>
+    <div>
+      <a href="https://www.instagram.com/vast.architects/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+      <a href="{% url 'careers' %}">Careers</a>
+      <a href="{% url 'contact' %}">Contact</a>
     </div>
-
-    <div class="row justify-content-center">
-      <div class="col-12 text-center">
-        <ul class="list-unstyled d-inline-flex mb-0">
-          <li class="me-4"><a href="{% url 'careers' %}">Careers</a></li>
-          <li class="me-4"><a href="{% url 'contact' %}">Contact</a></li>
-          <li><a href="{% url 'about' %}">About</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Practice Areas Section -->
-
-
-    <!-- ======= Testimonials Section ======= -->
-<!--    <section class="section pt-0">-->
-<!--      <div class="container">-->
-
-<!--        <div class="testimonials-slider swiper" data-aos="fade-up" data-aos-delay="100">-->
-<!--          <div class="swiper-wrapper">-->
-
-<!--            <div class="swiper-slide">-->
-<!--              <div class="testimonial-wrap">-->
-<!--                <div class="testimonial">-->
-<!--                  <img src="{% static 'assets/img/person_1.jpg' %}" alt="Image" class="img-fluid">-->
-<!--                  <blockquote>-->
-<!--                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis-->
-<!--                      explicabo inventore.</p>-->
-<!--                  </blockquote>-->
-<!--                  <p>&mdash; Jean Hicks</p>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>&lt;!&ndash; End testimonial item &ndash;&gt;-->
-
-<!--            <div class="swiper-slide">-->
-<!--              <div class="testimonial-wrap">-->
-<!--                <div class="testimonial">-->
-<!--                  <img src="{% static 'assets/img/person_2.jpg' %}" alt="Image" class="img-fluid">-->
-<!--                  <blockquote>-->
-<!--                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam necessitatibus incidunt ut officiis-->
-<!--                      explicabo inventore.</p>-->
-<!--                  </blockquote>-->
-<!--                  <p>&mdash; Chris Stanworth</p>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>&lt;!&ndash; End testimonial item &ndash;&gt;-->
-
-<!--          </div>-->
-<!--          <div class="swiper-pagination"></div>-->
-<!--        </div>-->
-
-<!--      </div>-->
-<!--    </section>&lt;!&ndash; End Testimonials Section &ndash;&gt;-->
-
-  </main><!-- End #main -->
-
-  <!-- ======= Footer ======= -->
-  <footer class="footer" role="contentinfo">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-6">
-          <div class="credits">
-
-
-          </div>
-        </div>
-        <div class="col-sm-6 social text-md-end">
-          <a href="https://www.instagram.com/vast.architects/" target="_blank"><span class="bi bi-instagram"></span></a>
-          <a href="https://www.linkedin.com/company/v%C4%81st-architects/" target="_blank"><span class="bi bi-linkedin"></span></a>
-      </div>
-
-      </div>
-    </div>
+    <span>© {% now "Y" %} VAST Architects</span>
   </footer>
 
-  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-
-  <!-- Vendor JS Files -->
   <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
   <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
   <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
   <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
-
-  <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
-
+  {% block extra_js %}{% endblock %}
 </body>
-
 </html>

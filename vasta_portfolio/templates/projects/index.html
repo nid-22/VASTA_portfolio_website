@@ -1,82 +1,107 @@
-
 {% extends 'base.html' %}
 {% load static %}
 
-{% block projects %}
-    <!-- ======= Works Section ======= -->
-    <section class="section site-portfolio">
-      <div class="container">
-        <div class="row mb-5 align-items-center">
-          <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
-            <h2>work</h2>
-<!--            <p class="mb-0">Architects, Landscape and Interior Designers</p>-->
-          </div>
-          <div class="col-md-12 col-lg-6 text-start text-lg-end" data-aos="fade-up" data-aos-delay="100">
-            <div id="filters" class="filters">
-              <a href="#" data-filter="*" class="active">All</a>
-              <a href="#" data-filter=".Architecture">Architecture</a>
-              <a href="#" data-filter=".Interior">Interior</a>
-              <!-- <a href="#" data-filter=".Landscape">Landscape</a> -->
-<!--              <a href="#" data-filter=".Furniture">Furniture</a>-->
-            </div>
-          </div>
-        </div>
-        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
-          {% for project in projects %}
-            <div class="item {{project.type}} col-sm-6 col-md-4 col-lg-4 mb-4">
-            <a href="{{project.get_absolute_url}}" class="item-wrap fancybox">
-              <div class="work-info">
-                <h3>{{project.project_name}}</h3>
-                <span>{{project.type}}</span>
+{% block title %}VAST Architects — Four walls are never enough.{% endblock %}
+{% block body_class %}home-page{% endblock %}
+{% block content %}
+  <section class="intro" aria-labelledby="intro-title">
+    <div class="eyebrow">
+      <span>Architecture · Interiors · Landscape</span>
+      <span>Bangalore, India</span>
+    </div>
+    <div class="intro-body">
+      <h1 id="intro-title">Four walls are<br><em>never enough.</em></h1>
+      <div class="intro-aside">
+        <a class="text-link" href="#work">Explore our work <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </section>
+
+  {% if carousel_projects %}
+    <section class="hero" aria-roledescription="carousel" aria-label="Featured projects" tabindex="0">
+      <div id="carousel-slides">
+        {% for project in carousel_projects %}
+          {% if project.desktop_carousel_image_url %}
+            <a class="hero-slide" href="{{ project.get_absolute_url }}" aria-label="Explore {{ project.heading }}"{% if not forloop.first %} hidden{% endif %}>
+              <picture>
+                <source media="(max-width:600px)" srcset="{{ project.mobile_carousel_image_url }}">
+                <img src="{{ project.desktop_carousel_image_url }}" alt="{{ project.heading }} by VAST Architects"{% if forloop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+              </picture>
+              <div class="hero-caption">
+                <div>
+                  <span class="eyebrow">Featured project</span>
+                  <h2>{{ project.heading }}</h2>
+                  <span>{{ project.typology.name }}</span>
+                </div>
+                <span class="circle" aria-hidden="true">↗</span>
               </div>
-              <img class="img-fluid" src="{{project.cover_image}}">
             </a>
-          </div>
-          {% endfor %}
-<!--          <div class="item web col-sm-6 col-md-4 col-lg-4 mb-4">-->
-<!--            <a href="work-single.html" class="item-wrap fancybox">-->
-<!--              <div class="work-info">-->
-<!--                <h3>Boxed Water</h3>-->
-<!--                <span>Web</span>-->
-<!--              </div>-->
-<!--              <img class="img-fluid" src="{% static 'assets/img/img_1.jpg' %}">-->
-<!--            </a>-->
-<!--          </div>-->
+          {% endif %}
+        {% endfor %}
+      </div>
+      <div class="carousel-controls" hidden>
+        <div class="carousel-dots" aria-label="Choose featured project"></div>
+        <div class="carousel-actions">
+          <span id="carousel-count" aria-hidden="true">01 of 01</span>
+          <button type="button" id="carousel-prev" aria-label="Previous project">←</button>
+          <button type="button" id="carousel-next" aria-label="Next project">→</button>
+          <button type="button" id="carousel-pause" aria-label="Pause slideshow">Ⅱ</button>
         </div>
       </div>
-    </section><!-- End  Works Section -->
+      <span id="carousel-status" class="sr-only" aria-live="polite"></span>
+    </section>
+  {% endif %}
 
-    <!-- ======= Clients Section ======= -->
-<!--    <section class="section">-->
-<!--      <div class="container">-->
-<!--        <div class="row justify-content-center text-center mb-4">-->
-<!--          <div class="col-5">-->
-<!--            <h3 class="h3 heading">My Clients</h3>-->
-<!--            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit explicabo inventore.</p>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div class="row">-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-adobe.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-uber.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-apple.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-netflix.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-nike.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
-<!--          <div class="col-4 col-sm-4 col-md-2">-->
-<!--            <a href="#" class="client-logo"><img src="{% static 'assets/img/logo-google.png' %}" alt="Image" class="img-fluid"></a>-->
-<!--          </div>-->
+  <section id="work" class="work section-pad" aria-labelledby="work-title">
+    <div class="section-head">
+      <h2 id="work-title" class="eyebrow copper">Selected work</h2>
+      <span class="grid-hint">Scroll to explore <span aria-hidden="true">↓</span></span>
+    </div>
+    <div id="project-scroll" class="project-scroll" tabindex="0" role="region" aria-label="Project gallery. Scroll here for more projects.">
+      <div id="project-grid" class="projects">
+        {% for project in projects %}
+          <a class="project" href="{{ project.get_absolute_url }}">
+            <div class="project-image">
+              {% if project.cover_image %}
+                <img src="{{ project.cover_image }}" alt="{{ project.project_name }} by VAST Architects" loading="lazy">
+              {% endif %}
+              <div class="project-caption">
+                <h3>{{ project.project_name }}</h3>
+                <span>{{ project.type }}</span>
+              </div>
+            </div>
+          </a>
+        {% empty %}
+          <p>No projects are available yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="grid-footer">
+      <p id="grid-count" aria-live="polite"></p>
+      <button type="button" id="see-more" class="text-link" aria-controls="project-grid" hidden>See more <span aria-hidden="true">↓</span></button>
+    </div>
+  </section>
 
-<!--        </div>-->
-<!--      </div>-->
-<!--    </section>&lt;!&ndash; End Clients Section &ndash;&gt;-->
+  <section id="studio" class="studio section-pad" aria-labelledby="studio-title">
+    <div class="studio-label"><span class="eyebrow copper">The studio</span></div>
+    <div class="studio-copy">
+      <h2 id="studio-title">Good spaces begin<br>with <em>understanding.</em></h2>
+      <div class="studio-bottom">
+        <p>We’re an architecture and interior design studio in Bangalore. Our work includes homes, offices and commercial spaces. We work with clients from the first sketches through to completion.</p>
+        <a class="text-link" href="{% url 'about' %}">About us <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="disciplines"><span>Architecture</span><span>Interiors</span><span>Landscape</span></div>
+    </div>
+  </section>
 
+  <section id="contact" class="contact section-pad" aria-labelledby="contact-title">
+    <span class="eyebrow">Have a project in mind?</span>
+    <a href="mailto:design@vastarchitects.in" class="contact-title">
+      <h2 id="contact-title">Let’s make<br>room for it.</h2>
+      <span aria-hidden="true">↗</span>
+    </a>
+    <div class="contact-bottom"><a href="mailto:design@vastarchitects.in">design@vastarchitects.in</a><span>Bangalore, India</span></div>
+  </section>
 {% endblock %}
+
+{% block extra_js %}<script src="{% static 'assets/js/homepage.js' %}"></script>{% endblock %}

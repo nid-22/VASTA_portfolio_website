@@ -19,6 +19,7 @@ import uuid
 from django.views.generic.edit import FormView
 from django.core.mail import EmailMessage
 from django.utils.encoding import smart_str
+import random
 
 # Max portfolio upload size (bytes)
 MAX_CAREER_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
@@ -43,17 +44,42 @@ class ProjectListView(ListView):
         # Call the base implementation first to get a context
         context = super().get_context_data(**kwargs)
         # Modify the context to include your custom data
+        project_objects = list(context['object_list'])
         context['projects'] = [
             {
                 'id': project.id,
                 'project_name': project.heading,
                 'cover_image': project.cover_image or None,
+                'carousel_desktop_image': project.desktop_carousel_image_url or None,
+                'carousel_mobile_image': project.mobile_carousel_image_url or None,
                 'type': project.typology.name,
                 'get_absolute_url': project.get_absolute_url,
             }
-            for project in context['object_list']
+            for project in project_objects
         ]
+        # Keep the first three projects in place and add three sampled projects.
+        # A session value avoids serving the same random set twice in a row
+        # when the project pool is large enough to provide another selection.
+        fixed_projects = project_objects[:3]
+        pool = project_objects[3:]
+        sample_size = min(3, len(pool))
+        random_projects = random.sample(pool, sample_size) if sample_size else []
+        previous_ids = self.request.session.get('homepage_random_project_ids', [])
+        if len(pool) > sample_size and sample_size and [p.pk for p in random_projects] == previous_ids:
+            for _ in range(5):
+                candidate = random.sample(pool, sample_size)
+                if [p.pk for p in candidate] != previous_ids:
+                    random_projects = candidate
+                    break
+        self.request.session['homepage_random_project_ids'] = [p.pk for p in random_projects]
+        context['carousel_projects'] = fixed_projects + random_projects
         return context
+
+
+class LegacyProjectListView(ProjectListView):
+    """Keep the original portfolio homepage available at the site root."""
+
+    template_name = 'projects/index_legacy.html'
 
 
 
