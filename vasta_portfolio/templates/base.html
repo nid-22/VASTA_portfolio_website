@@ -19,13 +19,16 @@
   <meta name="msapplication-TileImage" content="{% static 'assets/img/favicon-192.png' %}">
   <meta name="theme-color" content="#ffffff">
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600&amp;display=swap" rel="stylesheet">
   <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
-  <link href="{% static 'assets/css/style.css' %}?v=20260920-work1" rel="stylesheet">
-  <link href="{% static 'assets/css/vast-concept.css' %}?v=20260920-work1" rel="stylesheet">
-  <link href="{% static 'assets/css/django-pages.css' %}?v=20260920-work1" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}?v=20260918-logo3" rel="stylesheet">
+  <link href="{% static 'assets/css/vast-concept.css' %}?v=20260918-logo3" rel="stylesheet">
+  <link href="{% static 'assets/css/django-pages.css' %}?v=20260918-projectimage1" rel="stylesheet">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -33,10 +36,10 @@
   <header class="header" id="top">
     <a class="wordmark" href="{% url 'new-home' %}" aria-label="VAST Architects home">v<span>a</span>st <span>architects</span></a>
     <nav aria-label="Main navigation">
-      <a href="{% url 'project-list' %}" data-track-nav="work">Work</a>
-      <a href="{% url 'about' %}" data-track-nav="about">Studio</a>
-      <a href="{% url 'blog:list' %}" data-track-nav="journal">Journal</a>
-      <a class="contact-nav" href="{% url 'contact' %}" data-track-nav="contact">Let’s talk <span aria-hidden="true">↗</span></a>
+      <a href="{% url 'project-list' %}">Work</a>
+      <a href="{% url 'new-home' %}#studio">Studio</a>
+      <a href="{% url 'blog:list' %}">Journal</a>
+      <a class="contact-nav" href="{% url 'contact' %}">Let’s talk <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
 
@@ -51,9 +54,9 @@
   <footer>
     <a href="#top" class="wordmark" aria-label="Back to top">v<span>a</span>st <span>architects</span></a>
     <div>
-      <a href="https://www.instagram.com/vast.architects/" target="_blank" rel="noopener noreferrer" data-track-nav="instagram">Instagram ↗</a>
-      <a href="{% url 'careers' %}" data-track-nav="careers">Careers</a>
-      <a href="{% url 'contact' %}" data-track-nav="contact">Contact</a>
+      <a href="https://www.instagram.com/vast.architects/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+      <a href="{% url 'careers' %}">Careers</a>
+      <a href="{% url 'contact' %}">Contact</a>
     </div>
     <span>© {% now "Y" %} VAST Architects</span>
   </footer>
@@ -64,8 +67,6 @@
   <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
   <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
-  <script src="{% static 'assets/js/brand-word.js' %}"></script>
-  <script src="{% static 'assets/js/internal-analytics.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

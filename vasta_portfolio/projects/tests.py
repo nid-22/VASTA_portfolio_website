@@ -1,29 +1,22 @@
 from io import BytesIO
-import time
 
-from django.core import signing
-from django.core.cache import cache
 from django.core import mail
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import SimpleTestCase, TestCase, override_settings
+from django.test import SimpleTestCase, override_settings
 from django.urls import resolve, reverse
 from django.views.generic import RedirectView
 from PIL import Image
 
 from .admin import validate_carousel_image
-from .models import DailyAnalyticsMetric, Discipline, Project, Typology
-from .views import FORM_TOKEN_SALT, LegacyProjectListView, ProjectListView
+from .models import Project
+from .views import LegacyProjectListView, ProjectListView
 
 
 def uploaded_image(width, height, name='test.png'):
     buffer = BytesIO()
     Image.new('RGB', (width, height), color='white').save(buffer, format='PNG')
     return SimpleUploadedFile(name, buffer.getvalue(), content_type='image/png')
-
-
-def valid_form_token():
-    return signing.dumps({'issued_at': time.time() - 5}, salt=FORM_TOKEN_SALT, compress=True)
 
 
 class CarouselImageFallbackTests(SimpleTestCase):
@@ -55,70 +48,6 @@ class HomepageRoutingTests(SimpleTestCase):
         self.assertIs(resolve('/home/').func.view_class, RedirectView)
         response = self.client.get('/home/')
         self.assertRedirects(response, '/', fetch_redirect_response=False)
-
-    def test_old_salem_url_redirects_to_correct_slug(self):
-        response = self.client.get('/projects/box/')
-        self.assertRedirects(response, '/projects/salem-residence/', status_code=301, fetch_redirect_response=False)
-
-
-class OptionalProjectTextTests(SimpleTestCase):
-    def test_literal_none_is_hidden(self):
-        project = Project(short_description='None', long_description=' none ')
-        self.assertEqual(project.display_short_description, '')
-        self.assertEqual(project.display_long_description, '')
-
-    def test_long_descriptions_are_not_character_limited(self):
-        self.assertIsNone(Project._meta.get_field('long_description').max_length)
-
-
-class ProjectCategoryAndCarouselTests(TestCase):
-    def setUp(self):
-        self.category = Typology.objects.create(name='Residential')
-        self.architecture = Discipline.objects.get(name='Architecture')
-        self.interior = Discipline.objects.get(name='Interior')
-        self.projects = []
-        for index in range(6):
-            project = Project.objects.create(
-                heading=f'Project {index}', project_year='2026', status='Completed',
-                size='1000 sq ft', order_to_display_id=index, category=self.category,
-            )
-            project.disciplines.add(self.architecture)
-            self.projects.append(project)
-
-    def test_project_can_appear_in_both_filters(self):
-        self.projects[0].disciplines.add(self.interior)
-        response = self.client.get(reverse('project-list'))
-        project = next(item for item in response.context['projects'] if item['id'] == self.projects[0].id)
-        self.assertEqual(project['type'], 'Residential')
-        self.assertEqual(project['filter_classes'], 'architecture interior')
-
-    def test_carousel_first_slide_is_top_three_and_contains_six_projects(self):
-        response = self.client.get(reverse('new-home'))
-        carousel = response.context['carousel_projects']
-        self.assertEqual(len(carousel), 6)
-        self.assertIn(carousel[0].id, [project.id for project in self.projects[:3]])
-        self.assertEqual({project.id for project in carousel}, {project.id for project in self.projects})
-
-    def test_project_view_is_counted_once_per_session(self):
-        url = self.projects[0].get_absolute_url()
-        user_agent = 'Mozilla/5.0 Test Browser'
-        self.client.get(url, HTTP_USER_AGENT=user_agent)
-        self.client.get(url, HTTP_USER_AGENT=user_agent)
-        metric = DailyAnalyticsMetric.objects.get(metric='project_view', label='Project 0')
-        self.assertEqual(metric.count, 1)
-
-    def test_known_bot_project_view_is_not_counted(self):
-        self.client.get(self.projects[0].get_absolute_url(), HTTP_USER_AGENT='ExampleBot/1.0')
-        self.assertFalse(DailyAnalyticsMetric.objects.exists())
-
-    def test_navigation_event_is_counted(self):
-        response = self.client.post(
-            reverse('navigation-analytics'), {'label': 'about'},
-            HTTP_USER_AGENT='Mozilla/5.0 Test Browser', HTTP_SEC_FETCH_SITE='same-origin',
-        )
-        self.assertEqual(response.status_code, 204)
-        metric = DailyAnalyticsMetric.objects.get(metric='navigation', label='About')
-        self.assertEqual(metric.count, 1)
 
 
 class CarouselImageValidationTests(SimpleTestCase):
@@ -154,13 +83,9 @@ class CarouselImageValidationTests(SimpleTestCase):
 
 
 @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
-class ContactViewTests(TestCase):
-    def setUp(self):
-        cache.clear()
-
+class ContactViewTests(SimpleTestCase):
     def test_contact_submission_emails_callback_details(self):
         response = self.client.post(reverse('contact'), {
-            'form_token': valid_form_token(),
             'name': 'Asha Rao',
             'phone': '+91 98765 43210',
             'email': 'asha@example.com',
@@ -181,7 +106,6 @@ class ContactViewTests(TestCase):
 
     def test_contact_submission_requires_callback_details(self):
         response = self.client.post(reverse('contact'), {
-            'form_token': valid_form_token(),
             'name': '',
             'phone': '',
             'project_type': '',
@@ -193,70 +117,3 @@ class ContactViewTests(TestCase):
         self.assertContains(response, 'Please enter a phone number so we can call you.')
         self.assertContains(response, 'Please choose a project type.')
         self.assertEqual(len(mail.outbox), 0)
-
-    def test_honeypot_submission_is_discarded(self):
-        response = self.client.post(reverse('contact'), {
-            'form_token': valid_form_token(), 'website': 'spam.example',
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Enquiry received')
-        self.assertEqual(len(mail.outbox), 0)
-
-    def test_too_fast_submission_is_rejected(self):
-        response = self.client.post(reverse('contact'), {
-            'form_token': signing.dumps({'issued_at': time.time()}, salt=FORM_TOKEN_SALT),
-        })
-        self.assertEqual(response.status_code, 400)
-        self.assertContains(response, 'Please wait a moment', status_code=400)
-        self.assertEqual(len(mail.outbox), 0)
-
-
-@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
-class CareersViewTests(TestCase):
-    def setUp(self):
-        cache.clear()
-
-    def test_portfolio_link_can_be_used_instead_of_upload(self):
-        response = self.client.post(reverse('careers'), {
-            'form_token': valid_form_token(),
-            'name': 'Asha Rao',
-            'email': 'asha@example.com',
-            'portfolio_link': 'https://example.com/portfolio',
-        })
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Application received')
-        self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Portfolio link: https://example.com/portfolio', mail.outbox[0].body)
-
-    def test_word_document_is_rejected(self):
-        upload = SimpleUploadedFile(
-            'portfolio.docx', b'not a pdf',
-            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        )
-        response = self.client.post(reverse('careers'), {
-            'form_token': valid_form_token(),
-            'name': 'Asha Rao', 'email': 'asha@example.com', 'portfolio': upload,
-        })
-        self.assertEqual(response.status_code, 400)
-        self.assertContains(response, 'Only PDF portfolios are accepted.', status_code=400)
-        self.assertEqual(len(mail.outbox), 0)
-
-    def test_invalid_pdf_signature_is_rejected(self):
-        upload = SimpleUploadedFile('portfolio.pdf', b'not a pdf', content_type='application/pdf')
-        response = self.client.post(reverse('careers'), {
-            'form_token': valid_form_token(),
-            'name': 'Asha Rao', 'email': 'asha@example.com', 'portfolio': upload,
-        })
-        self.assertEqual(response.status_code, 400)
-        self.assertContains(response, 'does not appear to be a valid PDF', status_code=400)
-
-    def test_rate_limit_blocks_fourth_careers_submission(self):
-        data = {
-            'form_token': valid_form_token(), 'name': 'Asha Rao',
-            'email': 'asha@example.com', 'portfolio_link': 'https://example.com/portfolio',
-        }
-        for _ in range(3):
-            self.assertEqual(self.client.post(reverse('careers'), data).status_code, 200)
-        response = self.client.post(reverse('careers'), data)
-        self.assertEqual(response.status_code, 429)
-        self.assertContains(response, 'Too many applications', status_code=429)

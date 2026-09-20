@@ -7,7 +7,6 @@ from .views import (
     LegacyProjectListView,
     ProjectDetailView,
     ProjectListView,
-    navigation_analytics,
     tinymce_upload,
 )
 
@@ -26,14 +25,8 @@ urlpatterns = [
     ),
     path('work/', LegacyProjectListView.as_view(), name='project-list'),
     path('tinymce/upload/', tinymce_upload, name='tinymce_upload'),
-    path(
-        'projects/box/',
-        RedirectView.as_view(url='/projects/salem-residence/', permanent=True),
-        name='salem-old-url',
-    ),
     path('projects/<slug:slug>/', ProjectDetailView.as_view(), name='project_detail'),
     path('about/', AboutView.as_view(), name='about'),
     path('contact/', ContactView.as_view(), name='contact'),
     path('careers/', CareersView.as_view(), name='careers'),
-    path('analytics/navigation/', navigation_analytics, name='navigation-analytics'),
 ]

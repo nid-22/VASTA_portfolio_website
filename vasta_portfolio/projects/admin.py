@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 from PIL import Image, UnidentifiedImageError
 
-from .models import DailyAnalyticsMetric, Discipline, Typology, Location, Project, ProjectImage, SubType
+from .models import Typology, Location, Project, ProjectImage, SubType
 
 
 MAX_CAROUSEL_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB
@@ -181,9 +181,9 @@ class ProjectImageUploadForm(forms.ModelForm):
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectImageUploadForm
     inlines = [ProjectImageInline]
-    list_display = ('heading', 'category', 'discipline_list', 'location', 'project_year', 'status', 'order_to_display_id', 'is_active', 'updated')
+    list_display = ('heading', 'typology', 'location', 'project_year', 'order_to_display_id', 'is_active', 'updated')
     search_fields = ('heading', 'short_description', 'long_description', 'client')
-    list_filter = ('disciplines', 'category', 'status', 'location', 'project_year', 'is_active')
+    list_filter = ('typology', 'location', 'project_year', 'is_active')
     list_editable = ('order_to_display_id',)
     ordering = ('order_to_display_id',)
     readonly_fields = ('carousel_desktop_preview', 'carousel_mobile_preview')
@@ -191,7 +191,7 @@ class ProjectAdmin(admin.ModelAdmin):
         ('Project details', {
             'fields': (
                 'heading', 'slug', 'short_description', 'long_description',
-                'project_year', 'status', 'category', 'disciplines', 'sub_type', 'size',
+                'project_year', 'status', 'typology', 'sub_type', 'size',
                 'content', 'location', 'client',
             ),
         }),
@@ -214,10 +214,6 @@ class ProjectAdmin(admin.ModelAdmin):
             'fields': ('order_to_display_id', 'is_active', 'is_deleted'),
         }),
     )
-
-    @admin.display(description='Disciplines')
-    def discipline_list(self, obj):
-        return ' · '.join(discipline.name for discipline in obj.disciplines.all()) or '—'
 
     @admin.display(description='Desktop preview')
     def carousel_desktop_preview(self, obj):
@@ -310,24 +306,8 @@ class SubTypeAdmin(admin.ModelAdmin):
     list_display = ['name']
 
 
-@admin.register(DailyAnalyticsMetric)
-class DailyAnalyticsMetricAdmin(admin.ModelAdmin):
-    list_display = ('date', 'metric', 'label', 'count')
-    list_filter = ('metric', 'date')
-    search_fields = ('label',)
-    ordering = ('-date', 'metric', 'label')
-    readonly_fields = ('date', 'metric', 'label', 'count')
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-
 admin.site.register(Typology, TypologyAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ProjectImage, ProjectImageAdmin)
 admin.site.register(SubType, SubTypeAdmin)
-admin.site.register(Discipline, TypologyAdmin)

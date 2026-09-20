@@ -394,7 +394,7 @@ class Command(BaseCommand):
 
         # --- Projects ---------------------------------------------------
         for data in PROJECTS:
-            category, _ = Typology.objects.get_or_create(name=data['typology'])
+            typology, _ = Typology.objects.get_or_create(name=data['typology'])
 
             sub_type = None
             if data.get('sub_type'):
@@ -410,8 +410,8 @@ class Command(BaseCommand):
                     'short_description': data.get('short_description'),
                     'long_description': data.get('long_description'),
                     'project_year': str(random.randint(2023, 2025)),
-                    'status': 'Completed' if data['status'] == 'Complete' else data['status'],
-                    'category': category,
+                    'status': data['status'],
+                    'typology': typology,
                     'sub_type': sub_type,
                     'size': f"{random.randint(2000, 4000)} sq ft",
                     'content': '',

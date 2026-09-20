@@ -8,7 +8,7 @@
         <div class="row mb-4 align-items-center">
           <div class="col-md-11" data-aos="fade-up">
             <h2>{{ project.heading }}</h2>
-            {% if project.display_short_description %}<p>{{ project.display_short_description|safe }}</p>{% endif %}
+            <p>{{ project.short_description|safe }}</p>
           </div>
         </div>
       </div>
@@ -64,21 +64,20 @@
             <div class="col-md-3 ml-auto" data-aos="fade-up" data-aos-delay="100">
               <div class="sticky-content">
                 <!-- <h3 class="h3">{{project.heading}}</h3> -->
-                {% if project.sub_type %}<p class="mb-4"><span class="text-muted">{{ project.sub_type.name }}</span></p>{% endif %}
+                <p class="mb-4"><span class="text-muted">{{project.sub_type.name}}</span></p>
 
-                {% if project.display_long_description %}
-                  <div class="mb-3 project-content">{{ project.display_long_description|safe }}</div>
-                {% endif %}
+                <div class="mb-3 project-content">
+                  {{ project.long_description|safe }}
 
-                {% if project.client or project.status or project.size or project.location %}
-                  <h4 class="h4 mb-1">Details</h4>
-                  <ul class="list-unstyled list-line mb-5">
-                    {% if project.client %}<li>Client: {{ project.client }}</li>{% endif %}
-                    {% if project.status %}<li>Status: {{ project.get_status_display }}</li>{% endif %}
-                    {% if project.size %}<li>Size: {{ project.size }}</li>{% endif %}
-                    {% if project.location %}<li>Location: {{ project.location }}</li>{% endif %}
-                  </ul>
-                {% endif %}
+                </div>
+
+                <h4 class="h4 mb-1">Details</h4>
+                <ul class="list-unstyled list-line mb-5">
+                  <li>Client : {{project.client}}</li>
+                  <li>Status : {{project.status}}</li>
+                  <li>Size : {{project.size}}</li>
+                  <li>Location : {{project.location}}</li>
+                </ul>
 
                 <!-- <p><a href="#" class="readmore">Visit Website</a></p> -->
               </div>
