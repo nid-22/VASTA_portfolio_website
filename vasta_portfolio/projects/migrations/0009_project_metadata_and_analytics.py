@@ -45,7 +45,9 @@ def migrate_project_metadata(apps, schema_editor):
 
     salem = Project.objects.filter(heading__iexact='Salem Residence').first()
     if salem:
-        salem.slug = 'salem-residence'
+        desired_slug = 'salem-residence'
+        if not Project.objects.exclude(pk=salem.pk).filter(slug=desired_slug).exists():
+            salem.slug = desired_slug
         salem.short_description = (
             'A home shaped by connected volumes and natural light, the architecture aims '
             'to bring together life, light and landscape.'
@@ -123,3 +125,4 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(fields=('date', 'metric', 'label'), name='unique_daily_analytics_metric'),
         ),
     ]
+
