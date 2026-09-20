@@ -23,9 +23,6 @@
   <meta name="msapplication-TileImage" content="{% static 'assets/img/favicon-192.png' %}">
   <meta name="theme-color" content="#ffffff">
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&amp;family=Inconsolata:wght@400;500;600;700&amp;family=Raleway:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap" rel="stylesheet">
-
   <!-- Vendor CSS Files -->
   <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -34,7 +31,7 @@
 
 
   <!-- Template Main CSS File -->
-  <link href="{% static 'assets/css/style.css' %}?v=20260918-logo3" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}?v=20260920-work1" rel="stylesheet">
 
 
 </head>
@@ -48,10 +45,10 @@
         <div class="col-md-2">
           <ul class="custom-menu">
             <li class="active"><a href="{% url 'new-home' %}">Home</a></li>
-            <li><a href="{% url 'about' %}">About Us</a></li>
-            <li><a href="{% url 'project-list' %}">Works</a></li>
-            <li><a href="{% url 'blog:list' %}">Blog</a></li>
-            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+            <li><a href="{% url 'about' %}" data-track-nav="about">About Us</a></li>
+            <li><a href="{% url 'project-list' %}" data-track-nav="work">Works</a></li>
+            <li><a href="{% url 'blog:list' %}" data-track-nav="journal">Blog</a></li>
+            <li><a href="{% url 'contact' %}" data-track-nav="contact">Contact Us</a></li>
           </ul>
         </div>
         <div class="col-md-6 d-none d-md-block  mr-auto">
@@ -190,6 +187,8 @@
 
   <!-- Template Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
+  <script src="{% static 'assets/js/brand-word.js' %}"></script>
+  <script src="{% static 'assets/js/internal-analytics.js' %}"></script>
 
 </body>
 

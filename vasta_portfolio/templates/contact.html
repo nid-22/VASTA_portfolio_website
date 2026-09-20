@@ -22,22 +22,27 @@
         {% else %}
           <form class="contact-enquiry-form" action="{% url 'contact' %}" method="post">
             {% csrf_token %}
+            <input type="hidden" name="form_token" value="{{ form_token }}">
+            <div class="form-honeypot" aria-hidden="true">
+              <label for="contact-website">Leave this field empty</label>
+              <input type="text" name="website" id="contact-website" tabindex="-1" autocomplete="off">
+            </div>
             <div class="contact-fields">
               <div class="contact-field">
                 <label for="name">Your name <span aria-hidden="true">*</span></label>
-                <input type="text" name="name" id="name" value="{{ request.POST.name|default_if_none:'' }}" autocomplete="name" required{% if field_errors.name %} aria-invalid="true" aria-describedby="name-error"{% endif %}>
+                <input type="text" name="name" id="name" maxlength="100" value="{{ request.POST.name|default_if_none:'' }}" autocomplete="name" required{% if field_errors.name %} aria-invalid="true" aria-describedby="name-error"{% endif %}>
                 {% if field_errors.name %}<p class="contact-field-error" id="name-error">{{ field_errors.name }}</p>{% endif %}
               </div>
 
               <div class="contact-field">
                 <label for="phone">Phone number <span aria-hidden="true">*</span></label>
-                <input type="tel" name="phone" id="phone" value="{{ request.POST.phone|default_if_none:'' }}" autocomplete="tel" inputmode="tel" required{% if field_errors.phone %} aria-invalid="true" aria-describedby="phone-error"{% endif %}>
+                <input type="tel" name="phone" id="phone" maxlength="30" value="{{ request.POST.phone|default_if_none:'' }}" autocomplete="tel" inputmode="tel" required{% if field_errors.phone %} aria-invalid="true" aria-describedby="phone-error"{% endif %}>
                 {% if field_errors.phone %}<p class="contact-field-error" id="phone-error">{{ field_errors.phone }}</p>{% endif %}
               </div>
 
               <div class="contact-field">
                 <label for="email">Email <span class="optional">Optional</span></label>
-                <input type="email" name="email" id="email" value="{{ request.POST.email|default_if_none:'' }}" autocomplete="email"{% if field_errors.email %} aria-invalid="true" aria-describedby="email-error"{% endif %}>
+                <input type="email" name="email" id="email" maxlength="254" value="{{ request.POST.email|default_if_none:'' }}" autocomplete="email"{% if field_errors.email %} aria-invalid="true" aria-describedby="email-error"{% endif %}>
                 {% if field_errors.email %}<p class="contact-field-error" id="email-error">{{ field_errors.email }}</p>{% endif %}
               </div>
 
@@ -56,17 +61,17 @@
 
               <div class="contact-field">
                 <label for="project_location">Project location <span class="optional">Optional</span></label>
-                <input type="text" name="project_location" id="project_location" value="{{ request.POST.project_location|default_if_none:'' }}" autocomplete="address-level2">
+                <input type="text" name="project_location" id="project_location" maxlength="150" value="{{ request.POST.project_location|default_if_none:'' }}" autocomplete="address-level2">
               </div>
 
               <div class="contact-field">
                 <label for="call_time">Best time to call <span class="optional">Optional</span></label>
-                <input type="text" name="call_time" id="call_time" value="{{ request.POST.call_time|default_if_none:'' }}" placeholder="For example, weekday mornings">
+                <input type="text" name="call_time" id="call_time" maxlength="100" value="{{ request.POST.call_time|default_if_none:'' }}" placeholder="For example, weekday mornings">
               </div>
 
               <div class="contact-field contact-field--wide">
                 <label for="message">Tell us about the project <span aria-hidden="true">*</span></label>
-                <textarea name="message" id="message" rows="5" required{% if field_errors.message %} aria-invalid="true" aria-describedby="message-error"{% endif %}>{{ request.POST.message|default_if_none:'' }}</textarea>
+                <textarea name="message" id="message" rows="5" maxlength="3000" required{% if field_errors.message %} aria-invalid="true" aria-describedby="message-error"{% endif %}>{{ request.POST.message|default_if_none:'' }}</textarea>
                 {% if field_errors.message %}<p class="contact-field-error" id="message-error">{{ field_errors.message }}</p>{% endif %}
               </div>
             </div>

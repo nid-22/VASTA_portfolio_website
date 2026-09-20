@@ -8,8 +8,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql='ALTER TABLE projects_project DROP COLUMN IF EXISTS grid_shape;',
-            reverse_sql=migrations.RunSQL.noop,
-        ),
+        # Migration 0005 already removed this column. The old redundant SQL
+        # used PostgreSQL-only syntax and prevented fresh SQLite databases.
+        migrations.RunPython(migrations.RunPython.noop, migrations.RunPython.noop),
     ]

@@ -12,6 +12,7 @@ build/
 
 # Virtual environments
 .venv/
+.venv-preview/
 venv/
 venv312/
 env/
