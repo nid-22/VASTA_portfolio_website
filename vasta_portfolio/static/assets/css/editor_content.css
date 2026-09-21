@@ -25,6 +25,10 @@ img { max-width: 100%; height: auto; display: block; }
 table.essay-image-pair { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 16px 0; }
 table.essay-image-pair td { width: 50%; vertical-align: top; border: 0; }
 table.essay-image-pair figure { margin: 0; }
+table:has(img), table:has(img) th, table:has(img) td {
+  border: 0 !important;
+  outline: 0 !important;
+}
 figure.essay-float-left, img.essay-float-left { float: left; width: 42%; margin: 4px 20px 12px 0; }
 figure.essay-float-right, img.essay-float-right { float: right; width: 42%; margin: 4px 0 12px 20px; }
 figure.essay-float-left img, figure.essay-float-right img { width: 100%; }

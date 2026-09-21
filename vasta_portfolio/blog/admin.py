@@ -11,7 +11,8 @@ class BlogAdminForm(forms.ModelForm):
 		fields = '__all__'
 		widgets = {
 			'content': TinyMCE(mce_attrs={
-				'content_style': 'body { font-family: Arial, sans-serif; line-height: 1.7; }',
+				'content_css': '/static/assets/css/editor_content.css?v=20260921-blog2',
+				'content_style': 'body { font-family: Arial, sans-serif; line-height: 1.7; } table:has(img), table:has(img) th, table:has(img) td { border: 0 !important; outline: 0 !important; }',
 				'toolbar': 'undo redo | blocks styles | bold italic underline | alignleft aligncenter alignright | bullist numlist | image table link | code',
 				'style_formats': [
 					{'title': 'Image left, text wraps', 'selector': 'figure.image', 'classes': 'essay-float-left'},

@@ -21,9 +21,12 @@
 .blog-article-content table.essay-image-pair td{width:50%;vertical-align:top;border:0;padding:0 10px 0 0}
 .blog-article-content table.essay-image-pair td+td{padding:0 0 0 10px}
 .blog-article-content table.essay-image-pair figure{margin:0}
+.blog-article-content table:has(img){border:0!important;outline:0!important;border-collapse:separate!important;border-spacing:0!important}
+.blog-article-content table:has(img) th,.blog-article-content table:has(img) td{border:0!important;outline:0!important}
 .blog-article-content figure.essay-float-left,.blog-article-content img.essay-float-left{float:left;width:min(42%,300px);margin:5px 24px 15px 0}
 .blog-article-content figure.essay-float-right,.blog-article-content img.essay-float-right{float:right;width:min(42%,300px);margin:5px 0 15px 24px}
 .blog-article-content figure.essay-float-left img,.blog-article-content figure.essay-float-right img{width:100%}
 .blog-article-meta{border-top:1px solid var(--line);margin-top:52px;padding-top:18px;color:#777a72;font-size:13px}
 @media(max-width:700px){.blog-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 18px}.blog-detail .blog-article-header h1{margin-bottom:26px}.blog-article-content{font-size:15px}.blog-article-content table.essay-image-pair,.blog-article-content table.essay-image-pair tbody,.blog-article-content table.essay-image-pair tr,.blog-article-content table.essay-image-pair td{display:block;width:100%!important}.blog-article-content table.essay-image-pair td,.blog-article-content table.essay-image-pair td+td{padding:0 0 20px}.blog-article-content figure.essay-float-left,.blog-article-content figure.essay-float-right,.blog-article-content img.essay-float-left,.blog-article-content img.essay-float-right{float:none;width:100%;margin:1.5em 0}}
 @media(max-width:480px){.blog-grid{grid-template-columns:1fr}.blog-card img{aspect-ratio:1.45}}
+@media(max-width:700px){.blog-article-content table:has(img),.blog-article-content table:has(img) tbody,.blog-article-content table:has(img) tr,.blog-article-content table:has(img) td{display:block;width:100%!important}.blog-article-content table:has(img) colgroup{display:none}.blog-article-content table:has(img) td{padding:0 0 20px!important}}
