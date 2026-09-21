@@ -24,11 +24,10 @@ TINYMCE_CONFIG = {
 
     # Font options
     "font_family_formats": (
-        "Raleway=Raleway,sans-serif;"
+        "Arial=arial,helvetica,sans-serif;"
         "Inconsolata=Inconsolata,monospace;"
         "Georgia=georgia,serif;"
         "Times New Roman=times new roman,times,serif;"
-        "Arial=arial,helvetica,sans-serif;"
     ),
 
     "font_size_formats": "12px 14px 16px 18px 20px 24px 28px 32px 36px",
@@ -51,7 +50,7 @@ TINYMCE_CONFIG = {
 
     # Content styling (important)
     "content_style": (
-        "body { font-family: Raleway, sans-serif; line-height: 1.7; }"
+        "body { font-family: Arial, sans-serif; line-height: 1.7; }"
         "figure { margin: 2rem 0; }"
         "figcaption { font-size: 0.85rem; color: #666; text-align: center; }"
         "blockquote { font-style: italic; border-left: 3px solid #ccc; padding-left: 1rem; color: #555; }"

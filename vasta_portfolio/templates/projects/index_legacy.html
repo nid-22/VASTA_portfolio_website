@@ -4,7 +4,7 @@
 
 {% block projects %}
     <!-- ======= Works Section ======= -->
-    <section class="section site-portfolio">
+    <section class="section site-portfolio work-page">
       <div class="container">
         <div class="row mb-5 align-items-center">
           <div class="col-md-12 col-lg-6 mb-4 mb-lg-0" data-aos="fade-up">
@@ -21,7 +21,7 @@
             </div>
           </div>
         </div>
-        <div id="portfolio-grid" class="row no-gutter" data-aos="fade-up" data-aos-delay="200">
+        <div id="portfolio-grid" class="work-grid">
           {% for project in projects %}
             <div class="item {{ project.filter_classes }} col-6 col-md-4 col-lg-4 mb-4">
             <a href="{{project.get_absolute_url}}" class="item-wrap fancybox">

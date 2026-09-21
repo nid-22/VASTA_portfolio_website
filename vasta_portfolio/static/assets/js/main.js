@@ -49,35 +49,20 @@
     burgerMenu.classList.toggle('active');
   })
 
-  /**
-   * Porfolio isotope and filter
-   */
-  window.addEventListener('load', () => {
-    let portfolioContainer = select('#portfolio-grid');
-    if (portfolioContainer) {
-      let portfolioIsotope = new Isotope(portfolioContainer, {
-        itemSelector: '.item',
-      });
-
-      let portfolioFilters = select('#filters a', true);
-
-      on('click', '#filters a', function(e) {
-        e.preventDefault();
-        portfolioFilters.forEach(function(el) {
-          el.classList.remove('active');
-        });
-        this.classList.add('active');
-
-        portfolioIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-        portfolioIsotope.on('arrangeComplete', function() {
-          AOS.refresh()
-        });
-      }, true);
-    }
-
-  });
+  // CSS Grid keeps each project in the normal document flow while images load.
+  // Filtering only toggles visibility; it never calculates image positions.
+  const workGrid = select('.work-page #portfolio-grid');
+  if (workGrid) {
+    const workItems = [...workGrid.querySelectorAll('.item')];
+    const portfolioFilters = select('#filters a', true);
+    portfolioFilters.forEach(link => link.addEventListener('click', event => {
+      event.preventDefault();
+      portfolioFilters.forEach(filterLink => filterLink.classList.remove('active'));
+      link.classList.add('active');
+      const filter = link.getAttribute('data-filter');
+      workItems.forEach(item => { item.hidden = filter !== '*' && !item.matches(filter); });
+    }));
+  }
 
   /**
    * Testimonials slider
