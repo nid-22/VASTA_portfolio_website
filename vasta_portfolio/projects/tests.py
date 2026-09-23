@@ -107,6 +107,14 @@ class ProjectCategoryAndCarouselTests(TestCase):
         metric = DailyAnalyticsMetric.objects.get(metric='project_view', label='Project 0')
         self.assertEqual(metric.count, 1)
 
+    def test_short_description_is_metadata_not_visible_copy(self):
+        project = self.projects[0]
+        project.short_description = 'A concise search description for this project.'
+        project.save(update_fields=['short_description'])
+        response = self.client.get(project.get_absolute_url())
+        self.assertContains(response, 'content="A concise search description for this project."', html=False)
+        self.assertNotContains(response, '<p>A concise search description for this project.</p>', html=True)
+
     def test_known_bot_project_view_is_not_counted(self):
         self.client.get(self.projects[0].get_absolute_url(), HTTP_USER_AGENT='ExampleBot/1.0')
         self.assertFalse(DailyAnalyticsMetric.objects.exists())

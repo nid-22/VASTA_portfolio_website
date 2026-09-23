@@ -185,6 +185,24 @@
     }
 
     let currentIndex = 0;
+    let galleryIndex = 0;
+    const currentLabel = gallery.querySelector('[data-current]');
+    const pagePrev = gallery.querySelector('[data-gallery-prev]');
+    const pageNext = gallery.querySelector('[data-gallery-next]');
+    const thumbButtons = Array.from(gallery.querySelectorAll('[data-thumbs] .thumb'));
+
+    function showInPage(index) {
+      if (!mainImg || !imageUrls.length) return;
+      galleryIndex = (index + imageUrls.length) % imageUrls.length;
+      mainImg.src = imageUrls[galleryIndex];
+      mainImg.dataset.index = galleryIndex;
+      if (currentLabel) currentLabel.textContent = String(galleryIndex + 1).padStart(2, '0');
+      thumbButtons.forEach(button => {
+        const active = Number(button.dataset.index) === galleryIndex;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-current', active ? 'true' : 'false');
+      });
+    }
 
     function openAt(index){
       if (index < 0 || index >= imageUrls.length) return;
@@ -209,8 +227,10 @@
       lbImage.src = imageUrls[currentIndex];
     }
 
-    if (mainImg) mainImg.addEventListener('click', ()=> openAt(0));
-  thumbs.forEach((t, i) => t.addEventListener('click', ()=> openAt(i + (mainImg ? 1 : 0))));
+    if (mainImg) mainImg.addEventListener('click', ()=> openAt(galleryIndex));
+    thumbButtons.forEach(button => button.addEventListener('click', () => showInPage(Number(button.dataset.index))));
+    if (pagePrev) pagePrev.addEventListener('click', () => showInPage(galleryIndex - 1));
+    if (pageNext) pageNext.addEventListener('click', () => showInPage(galleryIndex + 1));
 
     btnClose.addEventListener('click', close);
     btnNext.addEventListener('click', next);
