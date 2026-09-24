@@ -173,3 +173,74 @@ class DailyAnalyticsMetric(models.Model):
         return f'{self.date} · {self.get_metric_display()} · {self.label}: {self.count}'
 
 
+class SubmissionBase(models.Model):
+    class Status(models.TextChoices):
+        NEW = 'new', 'New'
+        CONTACTED = 'contacted', 'Contacted'
+        IN_PROGRESS = 'in_progress', 'In progress'
+        CLOSED = 'closed', 'Closed'
+        SPAM = 'spam', 'Spam'
+
+    class EmailStatus(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SENT = 'sent', 'Sent'
+        FAILED = 'failed', 'Failed'
+        DISABLED = 'disabled', 'Disabled'
+
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.NEW)
+    internal_notes = models.TextField(blank=True)
+    email_status = models.CharField(
+        max_length=12,
+        choices=EmailStatus.choices,
+        default=EmailStatus.PENDING,
+    )
+    email_error = models.TextField(blank=True)
+    email_sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+        ordering = ('-created_at',)
+
+
+class ContactSubmission(SubmissionBase):
+    PROJECT_TYPE_CHOICES = (
+        ('architecture', 'Architecture'),
+        ('interiors', 'Interior design'),
+        ('architecture-interiors', 'Architecture + interiors'),
+        ('landscape', 'Landscape'),
+        ('other', 'Something else'),
+    )
+
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=30)
+    email = models.EmailField(blank=True)
+    project_type = models.CharField(max_length=30, choices=PROJECT_TYPE_CHOICES)
+    project_location = models.CharField(max_length=150, blank=True)
+    preferred_call_time = models.CharField(max_length=100, blank=True)
+    message = models.TextField(max_length=3000)
+
+    def __str__(self):
+        return f'{self.name} · {self.created_at:%d %b %Y}'
+
+
+class CareerSubmission(SubmissionBase):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    skills = models.TextField(max_length=500, blank=True)
+    years_experience = models.PositiveSmallIntegerField(null=True, blank=True)
+    seeking_internship = models.BooleanField(default=False)
+    portfolio_link = models.URLField(max_length=500, blank=True)
+    portfolio_filename = models.CharField(max_length=255, blank=True)
+    portfolio_content_type = models.CharField(max_length=100, blank=True)
+    portfolio_data = models.BinaryField(null=True, blank=True, editable=False)
+
+    @property
+    def has_portfolio_file(self):
+        return bool(self.portfolio_data)
+
+    def __str__(self):
+        return f'{self.name} · {self.created_at:%d %b %Y}'
+
+

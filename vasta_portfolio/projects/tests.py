@@ -1,6 +1,7 @@
 from io import BytesIO
 import time
 
+from django.contrib.auth import get_user_model
 from django.core import signing
 from django.core.cache import cache
 from django.core import mail
@@ -12,7 +13,14 @@ from django.views.generic import RedirectView
 from PIL import Image
 
 from .admin import validate_carousel_image
-from .models import DailyAnalyticsMetric, Discipline, Project, Typology
+from .models import (
+    CareerSubmission,
+    ContactSubmission,
+    DailyAnalyticsMetric,
+    Discipline,
+    Project,
+    Typology,
+)
 from .views import FORM_TOKEN_SALT, LegacyProjectListView, ProjectListView
 
 
@@ -164,6 +172,7 @@ class CarouselImageValidationTests(SimpleTestCase):
 @override_settings(
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     DEFAULT_FROM_EMAIL='contact@vastarchitects.in',
+    FORM_EMAIL_ENABLED=True,
 )
 class ContactViewTests(TestCase):
     def setUp(self):
@@ -189,6 +198,11 @@ class ContactViewTests(TestCase):
         self.assertIn('Phone: +91 98765 43210', mail.outbox[0].body)
         self.assertIn('Project type: Architecture + interiors', mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].reply_to, ['asha@example.com'])
+        submission = ContactSubmission.objects.get()
+        self.assertEqual(submission.name, 'Asha Rao')
+        self.assertEqual(submission.phone, '+91 98765 43210')
+        self.assertEqual(submission.project_type, 'architecture-interiors')
+        self.assertEqual(submission.email_status, ContactSubmission.EmailStatus.SENT)
 
     def test_contact_submission_requires_callback_details(self):
         response = self.client.post(reverse('contact'), {
@@ -212,6 +226,7 @@ class ContactViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Enquiry received')
         self.assertEqual(len(mail.outbox), 0)
+        self.assertFalse(ContactSubmission.objects.exists())
 
     def test_too_fast_submission_is_rejected(self):
         response = self.client.post(reverse('contact'), {
@@ -221,10 +236,28 @@ class ContactViewTests(TestCase):
         self.assertContains(response, 'Please wait a moment', status_code=400)
         self.assertEqual(len(mail.outbox), 0)
 
+    @override_settings(FORM_EMAIL_ENABLED=False)
+    def test_contact_submission_is_saved_when_email_is_disabled(self):
+        response = self.client.post(reverse('contact'), {
+            'form_token': valid_form_token(),
+            'name': 'Database Test',
+            'phone': '+91 98765 43210',
+            'email': 'database@example.com',
+            'project_type': 'architecture',
+            'message': 'Save this enquiry without trying SMTP.',
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Enquiry received')
+        self.assertEqual(len(mail.outbox), 0)
+        submission = ContactSubmission.objects.get()
+        self.assertEqual(submission.email_status, ContactSubmission.EmailStatus.DISABLED)
+
 
 @override_settings(
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
     DEFAULT_FROM_EMAIL='contact@vastarchitects.in',
+    FORM_EMAIL_ENABLED=True,
 )
 class CareersViewTests(TestCase):
     def setUp(self):
@@ -244,6 +277,10 @@ class CareersViewTests(TestCase):
         self.assertEqual(mail.outbox[0].from_email, 'contact@vastarchitects.in')
         self.assertEqual(mail.outbox[0].reply_to, ['asha@example.com'])
         self.assertIn('Portfolio link: https://example.com/portfolio', mail.outbox[0].body)
+        submission = CareerSubmission.objects.get()
+        self.assertEqual(submission.name, 'Asha Rao')
+        self.assertEqual(submission.portfolio_link, 'https://example.com/portfolio')
+        self.assertEqual(submission.email_status, CareerSubmission.EmailStatus.SENT)
 
     def test_word_document_is_rejected(self):
         upload = SimpleUploadedFile(
@@ -277,3 +314,59 @@ class CareersViewTests(TestCase):
         response = self.client.post(reverse('careers'), data)
         self.assertEqual(response.status_code, 429)
         self.assertContains(response, 'Too many applications', status_code=429)
+
+    @override_settings(FORM_EMAIL_ENABLED=False)
+    def test_pdf_application_is_saved_when_email_is_disabled(self):
+        portfolio = SimpleUploadedFile(
+            'portfolio.pdf',
+            b'%PDF-1.4\nVASTA test portfolio',
+            content_type='application/pdf',
+        )
+        response = self.client.post(reverse('careers'), {
+            'form_token': valid_form_token(),
+            'name': 'Database Test',
+            'email': 'database@example.com',
+            'portfolio': portfolio,
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Application received')
+        self.assertEqual(len(mail.outbox), 0)
+        submission = CareerSubmission.objects.get()
+        self.assertEqual(submission.portfolio_filename, 'portfolio.pdf')
+        self.assertEqual(bytes(submission.portfolio_data), b'%PDF-1.4\nVASTA test portfolio')
+        self.assertEqual(submission.email_status, CareerSubmission.EmailStatus.DISABLED)
+
+
+class CareerSubmissionAdminTests(TestCase):
+    def setUp(self):
+        self.submission = CareerSubmission.objects.create(
+            name='Portfolio Test',
+            email='portfolio@example.com',
+            portfolio_filename='private-portfolio.pdf',
+            portfolio_content_type='application/pdf',
+            portfolio_data=b'%PDF-1.4\nprivate',
+        )
+        self.url = reverse(
+            'admin:projects_careersubmission_download_portfolio',
+            args=(self.submission.pk,),
+        )
+
+    def test_portfolio_download_requires_admin_login(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse('admin:login'), response['Location'])
+
+    def test_admin_can_download_private_portfolio(self):
+        user = get_user_model().objects.create_superuser(
+            username='portfolio-admin',
+            email='admin@example.com',
+            password='test-password',
+        )
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, b'%PDF-1.4\nprivate')
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertIn('private-portfolio.pdf', response['Content-Disposition'])
