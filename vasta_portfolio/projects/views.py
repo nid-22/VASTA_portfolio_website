@@ -15,6 +15,7 @@ from django.core.mail import BadHeaderError, EmailMessage
 from django.core.validators import URLValidator, validate_email
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.crypto import salted_hmac
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import TemplateView
@@ -22,7 +23,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from .analytics import is_probable_bot, navigation_is_rate_limited, record_metric, record_once_per_session
-from .models import DailyAnalyticsMetric, Project
+from .models import CareerSubmission, ContactSubmission, DailyAnalyticsMetric, Project
 
 
 MAX_CAREER_FILE_SIZE = 10 * 1024 * 1024
@@ -31,6 +32,20 @@ FORM_TOKEN_MAX_AGE_SECONDS = 2 * 60 * 60
 FORM_TOKEN_SALT = 'vasta-public-form-timing-v1'
 RATE_LIMIT_WINDOW_SECONDS = 60 * 60
 RATE_LIMITS = {'contact': 5, 'careers': 3}
+
+
+def form_email_enabled():
+    value = getattr(settings, 'FORM_EMAIL_ENABLED', os.environ.get('FORM_EMAIL_ENABLED', 'False'))
+    if isinstance(value, bool):
+        return value
+    return str(value).lower() in ('1', 'true', 'yes')
+
+
+def update_email_status(submission, status, error=''):
+    submission.email_status = status
+    submission.email_error = error[:2000]
+    submission.email_sent_at = timezone.now() if status == submission.EmailStatus.SENT else None
+    submission.save(update_fields=('email_status', 'email_error', 'email_sent_at', 'updated_at'))
 
 
 def form_timing_token():
@@ -159,13 +174,7 @@ class AboutView(TemplateView):
 class ContactView(ProtectedFormView):
     template_name = 'contact.html'
     form_name = 'contact'
-    project_type_choices = {
-        'architecture': 'Architecture',
-        'interiors': 'Interior design',
-        'architecture-interiors': 'Architecture + interiors',
-        'landscape': 'Landscape',
-        'other': 'Something else',
-    }
+    project_type_choices = dict(ContactSubmission.PROJECT_TYPE_CHOICES)
 
     def post(self, request, *args, **kwargs):
         is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
@@ -208,6 +217,27 @@ class ContactView(ProtectedFormView):
             context['field_errors'] = field_errors
             return render(request, self.template_name, context)
 
+        try:
+            submission = ContactSubmission.objects.create(
+                name=fields['name'],
+                phone=fields['phone'],
+                email=fields['email'],
+                project_type=fields['project_type'],
+                project_location=fields['project_location'],
+                preferred_call_time=fields['call_time'],
+                message=fields['message'],
+            )
+        except Exception:
+            logging.exception('Error saving contact submission')
+            return self.render_form_error(
+                request,
+                kwargs,
+                'We could not save your enquiry. Please try again later.',
+                is_ajax,
+                500,
+            )
+
+        record_metric(DailyAnalyticsMetric.FORM_SUBMISSION, 'Contact enquiry')
         subject = f"New website enquiry — {fields['name']}"
         body = '\n'.join([
             'A new project enquiry was submitted through vastarchitects.in.', '',
@@ -220,20 +250,34 @@ class ContactView(ProtectedFormView):
         ])
         recipient = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'design@vastarchitects.in')
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SERVER_EMAIL', None) or 'contact@vastarchitects.in'
-        try:
-            EmailMessage(subject, body, from_email, [recipient], reply_to=[fields['email']] if fields['email'] else None).send(fail_silently=False)
-            record_metric(DailyAnalyticsMetric.FORM_SUBMISSION, 'Contact enquiry')
-            if is_ajax:
-                return HttpResponse('OK')
-            context = self.get_context_data(**kwargs)
-            context['sent'] = True
-            return render(request, self.template_name, context)
-        except BadHeaderError:
-            logging.exception('BadHeaderError sending contact email')
-            return self.render_form_error(request, kwargs, 'Invalid header found.', is_ajax, 400)
-        except Exception:
-            logging.exception('Error sending contact email')
-            return self.render_form_error(request, kwargs, 'An error occurred while sending the message. Please try again later.', is_ajax, 500)
+        if form_email_enabled():
+            try:
+                EmailMessage(
+                    subject,
+                    body,
+                    from_email,
+                    [recipient],
+                    reply_to=[fields['email']] if fields['email'] else None,
+                ).send(fail_silently=False)
+                update_email_status(submission, ContactSubmission.EmailStatus.SENT)
+            except BadHeaderError as exc:
+                logging.exception('BadHeaderError sending contact email')
+                update_email_status(submission, ContactSubmission.EmailStatus.FAILED, str(exc))
+            except Exception as exc:
+                logging.exception('Error sending contact email')
+                update_email_status(submission, ContactSubmission.EmailStatus.FAILED, str(exc))
+        else:
+            update_email_status(
+                submission,
+                ContactSubmission.EmailStatus.DISABLED,
+                'Email delivery is disabled; the enquiry is saved in Django Admin.',
+            )
+
+        if is_ajax:
+            return HttpResponse('OK')
+        context = self.get_context_data(**kwargs)
+        context['sent'] = True
+        return render(request, self.template_name, context)
 
     def render_form_error(self, request, kwargs, message, is_ajax=False, status=400):
         if is_ajax:
@@ -324,6 +368,31 @@ class CareersView(ProtectedFormView):
             context['field_errors'] = field_errors
             return render(request, self.template_name, context, status=400)
 
+        portfolio_data = portfolio.read() if portfolio else None
+        if portfolio:
+            portfolio.seek(0)
+        try:
+            submission = CareerSubmission.objects.create(
+                name=name,
+                email=email,
+                skills=skills,
+                years_experience=int(years) if years else None,
+                seeking_internship=internship,
+                portfolio_link=portfolio_link,
+                portfolio_filename=portfolio.name if portfolio else '',
+                portfolio_content_type=(getattr(portfolio, 'content_type', '') or 'application/pdf') if portfolio else '',
+                portfolio_data=portfolio_data,
+            )
+        except Exception:
+            logging.exception('Error saving careers submission')
+            return self.render_error(
+                request,
+                kwargs,
+                'We could not save your application. Please try again later.',
+                500,
+            )
+
+        record_metric(DailyAnalyticsMetric.FORM_SUBMISSION, 'Careers application')
         body = '\n'.join([
             f'Name: {name}', f'Email: {email}', f'Skills: {skills or "Not provided"}',
             f'Years experience: {years or "Not provided"}',
@@ -332,21 +401,33 @@ class CareersView(ProtectedFormView):
         ])
         recipient = os.environ.get('CAREERS_RECIPIENT_EMAIL', 'design@vastarchitects.in')
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'contact@vastarchitects.in'
-        try:
-            email_message = EmailMessage(
-                subject=f'Career submission from {name}', body=body, from_email=from_email,
-                to=[recipient], reply_to=[email],
+        if form_email_enabled():
+            try:
+                email_message = EmailMessage(
+                    subject=f'Career submission from {name}', body=body, from_email=from_email,
+                    to=[recipient], reply_to=[email],
+                )
+                if portfolio_data:
+                    email_message.attach(
+                        submission.portfolio_filename,
+                        portfolio_data,
+                        submission.portfolio_content_type,
+                    )
+                email_message.send(fail_silently=False)
+                update_email_status(submission, CareerSubmission.EmailStatus.SENT)
+            except Exception as exc:
+                logging.exception('Error sending careers email')
+                update_email_status(submission, CareerSubmission.EmailStatus.FAILED, str(exc))
+        else:
+            update_email_status(
+                submission,
+                CareerSubmission.EmailStatus.DISABLED,
+                'Email delivery is disabled; the application is saved in Django Admin.',
             )
-            if portfolio:
-                email_message.attach(portfolio.name, portfolio.read(), 'application/pdf')
-            email_message.send(fail_silently=False)
-            record_metric(DailyAnalyticsMetric.FORM_SUBMISSION, 'Careers application')
-            context = self.get_context_data(**kwargs)
-            context['sent'] = True
-            return render(request, self.template_name, context)
-        except Exception:
-            logging.exception('Error sending careers email')
-            return self.render_error(request, kwargs, 'An error occurred while sending your application. Please try again later.', 500)
+
+        context = self.get_context_data(**kwargs)
+        context['sent'] = True
+        return render(request, self.template_name, context)
 
     def render_error(self, request, kwargs, message, status):
         context = self.get_context_data(**kwargs)

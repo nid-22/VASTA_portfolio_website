@@ -1,14 +1,29 @@
 import os
+from urllib.parse import quote
+
 import cloudinary
 import cloudinary.uploader
 from django.contrib import admin
 from django import forms
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
+from django.urls import path, reverse
 from django.utils.html import format_html
 from PIL import Image, UnidentifiedImageError
 
-from .models import DailyAnalyticsMetric, Discipline, Typology, Location, Project, ProjectImage, SubType
+from .models import (
+    CareerSubmission,
+    ContactSubmission,
+    DailyAnalyticsMetric,
+    Discipline,
+    Location,
+    Project,
+    ProjectImage,
+    SubType,
+    Typology,
+)
 
 
 MAX_CAROUSEL_IMAGE_SIZE = 20 * 1024 * 1024  # 20 MB
@@ -322,6 +337,101 @@ class DailyAnalyticsMetricAdmin(admin.ModelAdmin):
         return False
 
     def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(ContactSubmission)
+class ContactSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('created_at', 'name', 'phone', 'project_type', 'status', 'email_status')
+    list_filter = ('status', 'email_status', 'project_type', 'created_at')
+    search_fields = ('name', 'phone', 'email', 'project_location', 'message')
+    list_editable = ('status',)
+    ordering = ('-created_at',)
+    readonly_fields = (
+        'created_at', 'updated_at', 'name', 'phone', 'email', 'project_type',
+        'project_location', 'preferred_call_time', 'message', 'email_status',
+        'email_error', 'email_sent_at',
+    )
+    fieldsets = (
+        ('Enquiry', {
+            'fields': (
+                'created_at', 'name', 'phone', 'email', 'project_type',
+                'project_location', 'preferred_call_time', 'message',
+            ),
+        }),
+        ('Follow-up', {'fields': ('status', 'internal_notes')}),
+        ('Email delivery', {
+            'fields': ('email_status', 'email_sent_at', 'email_error'),
+            'classes': ('collapse',),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(CareerSubmission)
+class CareerSubmissionAdmin(admin.ModelAdmin):
+    list_display = (
+        'created_at', 'name', 'email', 'years_experience', 'seeking_internship',
+        'portfolio_available', 'status', 'email_status',
+    )
+    list_filter = ('status', 'email_status', 'seeking_internship', 'created_at')
+    search_fields = ('name', 'email', 'skills', 'portfolio_link')
+    list_editable = ('status',)
+    ordering = ('-created_at',)
+    readonly_fields = (
+        'created_at', 'updated_at', 'name', 'email', 'skills', 'years_experience',
+        'seeking_internship', 'portfolio_link', 'portfolio_download',
+        'email_status', 'email_error', 'email_sent_at',
+    )
+    fieldsets = (
+        ('Application', {
+            'fields': (
+                'created_at', 'name', 'email', 'skills', 'years_experience',
+                'seeking_internship', 'portfolio_link', 'portfolio_download',
+            ),
+        }),
+        ('Follow-up', {'fields': ('status', 'internal_notes')}),
+        ('Email delivery', {
+            'fields': ('email_status', 'email_sent_at', 'email_error'),
+            'classes': ('collapse',),
+        }),
+    )
+
+    @admin.display(description='Portfolio', boolean=True)
+    def portfolio_available(self, obj):
+        return bool(obj.portfolio_data or obj.portfolio_link)
+
+    @admin.display(description='Portfolio PDF')
+    def portfolio_download(self, obj):
+        if not obj or not obj.portfolio_data:
+            return 'No PDF uploaded'
+        url = reverse('admin:projects_careersubmission_download_portfolio', args=(obj.pk,))
+        return format_html('<a href="{}">Download {}</a>', url, obj.portfolio_filename)
+
+    def get_urls(self):
+        return [
+            path(
+                '<path:object_id>/download-portfolio/',
+                self.admin_site.admin_view(self.download_portfolio),
+                name='projects_careersubmission_download_portfolio',
+            ),
+        ] + super().get_urls()
+
+    def download_portfolio(self, request, object_id):
+        submission = get_object_or_404(CareerSubmission, pk=object_id)
+        if not submission.portfolio_data:
+            raise Http404('No portfolio was uploaded for this application.')
+        filename = submission.portfolio_filename or 'portfolio.pdf'
+        response = HttpResponse(
+            bytes(submission.portfolio_data),
+            content_type=submission.portfolio_content_type or 'application/pdf',
+        )
+        response['Content-Disposition'] = f"attachment; filename*=UTF-8''{quote(filename)}"
+        return response
+
+    def has_add_permission(self, request):
         return False
 
 
