@@ -1,3 +1,4 @@
+import hmac
 import logging
 import os
 import random
@@ -18,6 +19,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.crypto import salted_hmac
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
@@ -32,6 +34,42 @@ FORM_TOKEN_MAX_AGE_SECONDS = 2 * 60 * 60
 FORM_TOKEN_SALT = 'vasta-public-form-timing-v1'
 RATE_LIMIT_WINDOW_SECONDS = 60 * 60
 RATE_LIMITS = {'contact': 5, 'careers': 3}
+
+
+def _monitor_cursor(request, name):
+    try:
+        return max(0, int(request.GET.get(name, 0)))
+    except (TypeError, ValueError):
+        return 0
+
+
+@require_GET
+def submission_monitor(request):
+    """Return only submission counts and cursors for the private notifier."""
+    expected_token = os.environ.get('SUBMISSION_MONITOR_TOKEN', '')
+    authorization = request.headers.get('Authorization', '')
+    supplied_token = authorization.removeprefix('Bearer ').strip()
+    if not expected_token or not supplied_token or not hmac.compare_digest(expected_token, supplied_token):
+        return JsonResponse({'detail': 'Not found.'}, status=404)
+
+    after_contact = _monitor_cursor(request, 'after_contact')
+    after_career = _monitor_cursor(request, 'after_career')
+    contact_queryset = ContactSubmission.objects.order_by('pk')
+    career_queryset = CareerSubmission.objects.order_by('pk')
+    latest_contact = contact_queryset.values_list('pk', flat=True).last() or 0
+    latest_career = career_queryset.values_list('pk', flat=True).last() or 0
+
+    return JsonResponse({
+        'contact': {
+            'new_count': contact_queryset.filter(pk__gt=after_contact).count(),
+            'latest_id': latest_contact,
+        },
+        'career': {
+            'new_count': career_queryset.filter(pk__gt=after_career).count(),
+            'latest_id': latest_career,
+        },
+        'checked_at': timezone.now().isoformat(),
+    })
 
 
 def form_email_enabled():

@@ -8,6 +8,7 @@ from .views import (
     ProjectDetailView,
     ProjectListView,
     navigation_analytics,
+    submission_monitor,
     tinymce_upload,
 )
 
@@ -36,4 +37,5 @@ urlpatterns = [
     path('contact/', ContactView.as_view(), name='contact'),
     path('careers/', CareersView.as_view(), name='careers'),
     path('analytics/navigation/', navigation_analytics, name='navigation-analytics'),
+    path('internal/submissions/', submission_monitor, name='submission-monitor'),
 ]

@@ -1,5 +1,6 @@
 from io import BytesIO
 import time
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core import signing
@@ -370,3 +371,65 @@ class CareerSubmissionAdminTests(TestCase):
         self.assertEqual(response.content, b'%PDF-1.4\nprivate')
         self.assertEqual(response['Content-Type'], 'application/pdf')
         self.assertIn('private-portfolio.pdf', response['Content-Disposition'])
+
+
+class SubmissionMonitorTests(TestCase):
+    def setUp(self):
+        self.url = reverse('submission-monitor')
+
+    def test_monitor_is_hidden_without_the_private_token(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    @patch.dict('os.environ', {'SUBMISSION_MONITOR_TOKEN': 'test-monitor-token'})
+    def test_monitor_rejects_an_incorrect_token(self):
+        response = self.client.get(
+            self.url,
+            HTTP_AUTHORIZATION='Bearer incorrect-token',
+        )
+        self.assertEqual(response.status_code, 404)
+
+    @patch.dict('os.environ', {'SUBMISSION_MONITOR_TOKEN': 'test-monitor-token'})
+    def test_monitor_returns_only_counts_and_cursors(self):
+        contact = ContactSubmission.objects.create(
+            name='Private Contact',
+            phone='+91 90000 00000',
+            email='private@example.com',
+            project_type='architecture',
+            message='Sensitive enquiry text.',
+        )
+        career = CareerSubmission.objects.create(
+            name='Private Applicant',
+            email='applicant@example.com',
+        )
+
+        response = self.client.get(
+            self.url,
+            {'after_contact': 0, 'after_career': 0},
+            HTTP_AUTHORIZATION='Bearer test-monitor-token',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['contact'], {'new_count': 1, 'latest_id': contact.pk})
+        self.assertEqual(payload['career'], {'new_count': 1, 'latest_id': career.pk})
+        self.assertNotContains(response, 'Private Contact')
+        self.assertNotContains(response, 'private@example.com')
+
+    @patch.dict('os.environ', {'SUBMISSION_MONITOR_TOKEN': 'test-monitor-token'})
+    def test_monitor_respects_saved_cursors(self):
+        contact = ContactSubmission.objects.create(
+            name='Already Seen',
+            phone='+91 90000 00000',
+            project_type='other',
+            message='Already processed.',
+        )
+
+        response = self.client.get(
+            self.url,
+            {'after_contact': contact.pk, 'after_career': 0},
+            HTTP_AUTHORIZATION='Bearer test-monitor-token',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['contact']['new_count'], 0)
