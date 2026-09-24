@@ -44,8 +44,8 @@ body:not(.home-page) .project-gallery .gallery-main .main-photo{width:100%;heigh
 .project-detail-header h1{font-size:clamp(42px,4.15vw,64px)!important;line-height:1;margin:0}
 .project-detail-layout{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:clamp(38px,3.5vw,62px);align-items:start}
 .project-detail-media{min-width:0}
-.project-detail-page .gallery-main{aspect-ratio:1.86;background:#ebeae5;overflow:hidden;cursor:zoom-in}
-.project-detail-page .gallery-main .main-photo{width:100%!important;height:100%!important;object-fit:cover!important}
+.project-detail-page .gallery-main{aspect-ratio:1.86;background:var(--paper);overflow:hidden;cursor:zoom-in}
+.project-detail-page .gallery-main .main-photo{width:100%!important;height:100%!important;object-fit:contain!important}
 .project-gallery-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:28px;margin-top:22px}
 .project-detail-page .gallery-thumbs{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;justify-content:initial!important;flex-wrap:initial!important;max-width:75%;margin:0!important}
 .project-detail-page .gallery-thumbs .thumb{position:relative;width:auto!important;height:auto!important;aspect-ratio:1.55;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;background:transparent;padding:0 0 8px;overflow:hidden;cursor:pointer}
