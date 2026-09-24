@@ -1,4 +1,5 @@
 import logging
+import os
 import random
 import time
 import uuid
@@ -217,8 +218,8 @@ class ContactView(ProtectedFormView):
             f"Preferred time to call: {fields['call_time'] or 'Not provided'}", '',
             'About the project:', fields['message'],
         ])
-        recipient = getattr(settings, 'CONTACT_RECIPIENT_EMAIL', 'vast.architects@gmail.com')
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SERVER_EMAIL', None) or 'design@vastarchitects.in'
+        recipient = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'design@vastarchitects.in')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or getattr(settings, 'SERVER_EMAIL', None) or 'contact@vastarchitects.in'
         try:
             EmailMessage(subject, body, from_email, [recipient], reply_to=[fields['email']] if fields['email'] else None).send(fail_silently=False)
             record_metric(DailyAnalyticsMetric.FORM_SUBMISSION, 'Contact enquiry')
@@ -329,8 +330,8 @@ class CareersView(ProtectedFormView):
             f"Looking for internship: {'Yes' if internship else 'No'}",
             f'Portfolio link: {portfolio_link or "Not provided"}',
         ])
-        recipient = getattr(settings, 'CAREERS_RECIPIENT_EMAIL', 'design@vastarchitects.in')
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'design@vastarchitects.in'
+        recipient = os.environ.get('CAREERS_RECIPIENT_EMAIL', 'design@vastarchitects.in')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', None) or 'contact@vastarchitects.in'
         try:
             email_message = EmailMessage(
                 subject=f'Career submission from {name}', body=body, from_email=from_email,

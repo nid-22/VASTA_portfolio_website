@@ -161,7 +161,10 @@ class CarouselImageValidationTests(SimpleTestCase):
             )
 
 
-@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+@override_settings(
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    DEFAULT_FROM_EMAIL='contact@vastarchitects.in',
+)
 class ContactViewTests(TestCase):
     def setUp(self):
         cache.clear()
@@ -181,8 +184,8 @@ class ContactViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Enquiry received')
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to, ['vast.architects@gmail.com'])
-        self.assertEqual(mail.outbox[0].from_email, 'design@vastarchitects.in')
+        self.assertEqual(mail.outbox[0].to, ['design@vastarchitects.in'])
+        self.assertEqual(mail.outbox[0].from_email, 'contact@vastarchitects.in')
         self.assertIn('Phone: +91 98765 43210', mail.outbox[0].body)
         self.assertIn('Project type: Architecture + interiors', mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].reply_to, ['asha@example.com'])
@@ -219,7 +222,10 @@ class ContactViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 0)
 
 
-@override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
+@override_settings(
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    DEFAULT_FROM_EMAIL='contact@vastarchitects.in',
+)
 class CareersViewTests(TestCase):
     def setUp(self):
         cache.clear()
@@ -234,6 +240,9 @@ class CareersViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Application received')
         self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, ['design@vastarchitects.in'])
+        self.assertEqual(mail.outbox[0].from_email, 'contact@vastarchitects.in')
+        self.assertEqual(mail.outbox[0].reply_to, ['asha@example.com'])
         self.assertIn('Portfolio link: https://example.com/portfolio', mail.outbox[0].body)
 
     def test_word_document_is_rejected(self):
