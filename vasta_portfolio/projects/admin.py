@@ -196,9 +196,9 @@ class ProjectImageUploadForm(forms.ModelForm):
 class ProjectAdmin(admin.ModelAdmin):
     form = ProjectImageUploadForm
     inlines = [ProjectImageInline]
-    list_display = ('heading', 'category', 'discipline_list', 'location', 'project_year', 'status', 'order_to_display_id', 'is_active', 'updated')
+    list_display = ('heading', 'category', 'discipline_list', 'location', 'project_year', 'status', 'order_to_display_id', 'show_in_carousel', 'is_active', 'updated')
     search_fields = ('heading', 'short_description', 'long_description', 'client')
-    list_filter = ('disciplines', 'category', 'status', 'location', 'project_year', 'is_active')
+    list_filter = ('show_in_carousel', 'disciplines', 'category', 'status', 'location', 'project_year', 'is_active')
     list_editable = ('order_to_display_id',)
     ordering = ('order_to_display_id',)
     readonly_fields = ('carousel_desktop_preview', 'carousel_mobile_preview')
@@ -220,6 +220,7 @@ class ProjectAdmin(admin.ModelAdmin):
                 'desktop carousel image and then the cover.'
             ),
             'fields': (
+                'show_in_carousel',
                 'carousel_desktop_image', 'carousel_desktop_image_file',
                 'carousel_desktop_preview', 'carousel_mobile_image',
                 'carousel_mobile_image_file', 'carousel_mobile_preview',

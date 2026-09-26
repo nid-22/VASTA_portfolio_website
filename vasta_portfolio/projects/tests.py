@@ -108,6 +108,16 @@ class ProjectCategoryAndCarouselTests(TestCase):
         self.assertIn(carousel[0].id, [project.id for project in self.projects[:3]])
         self.assertEqual({project.id for project in carousel}, {project.id for project in self.projects})
 
+    def test_project_can_remain_in_work_grid_while_excluded_from_carousel(self):
+        excluded_project = self.projects[0]
+        excluded_project.show_in_carousel = False
+        excluded_project.save(update_fields=('show_in_carousel',))
+
+        response = self.client.get(reverse('new-home'))
+
+        self.assertIn(excluded_project.id, [project['id'] for project in response.context['projects']])
+        self.assertNotIn(excluded_project.id, [project.id for project in response.context['carousel_projects']])
+
     def test_project_view_is_counted_once_per_session(self):
         url = self.projects[0].get_absolute_url()
         user_agent = 'Mozilla/5.0 Test Browser'

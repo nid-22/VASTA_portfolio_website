@@ -159,8 +159,9 @@ class ProjectListView(ListView):
             for project in project_objects
         ]
 
-        top_projects = project_objects[:3]
-        pool = project_objects[3:]
+        carousel_candidates = [project for project in project_objects if project.show_in_carousel]
+        top_projects = carousel_candidates[:3]
+        pool = carousel_candidates[3:]
         sample_size = min(3, len(pool))
         random_projects = random.sample(pool, sample_size) if sample_size else []
         previous_ids = self.request.session.get('homepage_random_project_ids', [])

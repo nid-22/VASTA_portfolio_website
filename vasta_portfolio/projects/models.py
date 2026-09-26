@@ -83,6 +83,11 @@ class Project(BaseModel):
         verbose_name='Phone carousel image',
         help_text='Portrait image used by the homepage carousel on phones.',
     )
+    show_in_carousel = models.BooleanField(
+        default=True,
+        verbose_name='Show in homepage carousel',
+        help_text='Turn this off to keep the project on the website but exclude it from the homepage carousel.',
+    )
     # ordering integer for display in the portfolio grid (smaller numbers show first)
     order_to_display_id = models.PositiveIntegerField(default=0, help_text='Lower values appear earlier in the list')
 
